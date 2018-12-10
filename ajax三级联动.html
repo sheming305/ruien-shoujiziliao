@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div id="sanji"><!-- div的id为“sanji” -->
+	</div>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+		   //向div里面放三个下拉菜单
+var str = "<select id='sheng'></select><select id='shi'></select><select id='qu'></select>";
+		  //给三个下拉列表定义 str 变量
+		  
+		  $("#sanji").html(str);
+
+
+		  FillSheng();
+		  FillShi();
+		  FillQu();//Sheng Shi Qu的逻辑顺序 
+
+		  
+		  $("#sheng").change(function(){
+
+		  	FillShi();
+		  	FillQu();
+		   })//给sheng菜单添加点击事件
+
+		  $("#shi").change(function(){
+		  	FillQu();
+		  })//给shi菜单添加点击事件
+
+
+		});//页面加载完成之后过来执行某些代码   
+
+	function FillSheng(){
+		  var pcode = "";//定义一个变量
+		  $.ajax({
+		  	url:"chuli.php",
+		  	data:{pcode:pcode},
+		  	type:"POST",
+		  	dataType:"TEXT",
+		  	success:function(data){
+		  		var hang = data.split("^");
+		  		str +="<option value='"+lie[0]+"'>"+lie[1]+"</option>";
+		  	}
+		  	$("#sheng").html(str);
+
+		  });
+
+		}
+
+
+	function FillShi() {
+		var pcode = $("#sheng").val();
+		$.ajax({
+			async:false,
+			url:"chuli.php",
+			data:{pcode:pcode},
+			type:"POST",
+			dataType:"TEXT",
+			success: function(data){
+				var hang = data.split("|");
+				var str = "";
+				for(var i=0;i<hang.length;i++)
+				{
+					var lie = hang[i].split("^");
+					str += "<option value='"+lie[0]+"'>"+lie[1]+"</option>";
+				}
+				$("#shi").html(str);
+			}
+		});
+	}
+
+	function FillQu() {
+		var pcode = $("#shi").val();
+		$.ajax({
+			url:"chuli.php",
+			data:{pcode:pcode},
+			type:"POST",
+			dataType:"TEXT",
+			success: function(data){
+				var hang = data.split("|");
+				var str = "";
+				for(var i=0;i<hang.length;i++)
+				{
+					var lie = hang[i].split("^");
+					str += "<option value='"+lie[0]+"'>"+lie[1]+"</option>";
+				}
+				$("#qu").html(str);
+			}
+		});
+	}
+
+<?php
+include("DBDA.class.php");
+$db = new DBDA();
+$pcode = $_POST["pcode"];
+$sql = "select * from chinastates where parentareacode='{$pcode}'";
+echo $db->StrQuery($sql);
+</script>
+</body>
+</html>

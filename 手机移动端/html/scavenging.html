@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<title>共享护理床</title>
+	</head>
+
+	<body>
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/dlc.js?-111"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
+		<script>
+			$(function() {
+				var timestamp = (new Date().getTime() / 1000).toFixed(0);
+				var nonceStr = Math.random().toString(36).substr(2);
+				var ticket = ticket_val();
+				console.log(timestamp);
+				console.log(nonceStr);
+				console.log(ticket);
+				console.log(wx_js(ticket, timestamp, nonceStr));
+				// var jsondata=$.parseJSON(data);
+				// alert(data.wxconfig.appId);
+				// alert(data.appId);
+				wx.config({
+					// 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					//debug: false,
+					appId: "wxc72b57ad73571b5c", // 必填，公众号的唯一标识    
+					timestamp: timestamp, // 必填，生成签名的时间戳    
+					nonceStr: nonceStr, // 必填，生成签名的随机串    
+					signature: wx_js(ticket, timestamp, nonceStr), // 必填，签名，见附录1 
+					// 必填，需要使用的JS接口列表
+					jsApiList: [
+						'checkJsApi',
+						'scanQRCode',
+					]
+				});
+				//
+				wx.error(function(res) {
+					_alert("出错了：" + res.errMsg); //这个地方的好处就是wx.config配置错误，会弹出窗口哪里错误，然后根据微信文档查询即可。
+				});
+
+				wx.ready(function() {
+					wx.checkJsApi({
+						jsApiList: ['scanQRCode'],
+						success: function(res) {
+
+						}
+					});
+
+					//启动扫描二维码
+					wx.scanQRCode({
+						needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+						scanType: ["qrCode"], // 可以指定扫二维码还是一维码，默认二者都有
+						success: function(res) {
+							var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+							//_alert("扫描结果："+JSON.stringify(res));
+							location.href = result; //因为我这边是扫描后有个链接，然后跳转到该页面
+						}
+					});
+					clearInterval(time);
+					var time=setInterval(function(){
+						WeixinJSBridge.call('closeWindow');
+					},2000)
+				});
+			});
+		</script>
+	</body>
+
+</html>

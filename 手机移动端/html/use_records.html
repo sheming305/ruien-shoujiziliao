@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css" />
+		<title>使用记录</title>
+	</head>
+
+	<body>
+		<section>
+			<ul class="f14 mt10 records_content">
+				<!--<li class="bg-ff p15 mb10">
+					<p class="mb2">
+						<span class="c9 ">设备编号</span>
+						<span class="pl6">01215224</span>
+						<span class="right" style="color: #F24644;">￥58.00</span>
+					</p>
+					<p class="mb2">
+						<span class="c9 ">设备名称</span>
+						<span class="pl6">东莞市南城区高盛科技大厦</span>
+					</p>
+					<p class="mb2">
+						<span class="c9 ">按摩套餐</span>
+						<span class="pl6">按摩20分钟 | 空调24小时</span>
+					</p>
+					<p>
+						<span class="c9 f12">2018-10-18 16:40</span>
+					</p>
+				</li>
+				<li class="bg-ff p15 mb10">
+					<p class="mb2">
+						<span class="c9 ">设备编号</span>
+						<span class="pl6">01215224</span>
+						<span class="right" style="color: #F24644;">￥58.00</span>
+					</p>
+					<p class="mb2">
+						<span class="c9 ">设备名称</span>
+						<span class="pl6">东莞市南城区高盛科技大厦</span>
+					</p>
+					<p class="mb2">
+						<span class="c9 ">按摩套餐</span>
+						<span class="pl6">按摩20分钟 | 空调24小时 | 富氧离子12小时5</span>
+					</p>
+					<p>
+						<span class="c9 f12">2018-10-18 16:40</span>
+					</p>
+				</li>-->
+
+			</ul>
+		</section>
+
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js"></script>
+		<script>
+			$(function() {
+				var token = user_token();
+				var url = dlcUrl();
+				var page = 1;
+				var loading=true;
+				//使用记录
+				function record() {
+					load();
+					var obj = {
+						"HTTP_API": "vv/order/api/index/getOrderList",
+						"token": token,
+						"page": page,
+						"pagesize": 10
+					}
+					var html = "";
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						var data = data.data.list;
+						if(code == 1) {
+							if(page == 1 && data.length == 0) {
+								html = `<li class="bg-ff br3 p-r mb10">
+										<p class="c9 ptb30 ta-center">暂无明细<p/>
+									</li>`
+							} else {
+								for(i in data) {
+									var device_macno = data[i].device_macno; //设备编号
+									var macno_name = data[i].macno_name;
+									var sonTitle = data[i].sonTitle;
+									var sonhtml = ""; //按摩套餐
+									for(e in sonTitle) {
+										var son = sonTitle[e];
+										sonhtml += `${son}`
+										if(e > 0) {
+											sonhtml += ` | ${son}`
+										}
+									}
+									var ctime = data[i].ctime;
+									var money = data[i].money;
+									html += `<li class="bg-ff p15 mb10">
+										<p class="mb2">
+											<span class="c9 ">设备编号</span>
+											<span class="pl6">${device_macno}</span>
+											<span class="right" style="color: #F24644;">￥${money}</span>
+										</p>
+										<p class="mb2">
+											<span class="c9 ">设备名称</span>
+											<span class="pl6">${macno_name}</span>
+										</p>
+										<p class="mb2">
+											<span class="c9 ">按摩套餐</span>
+											<span class="pl6">${sonhtml}</span>
+										</p>
+										<p>
+											<span class="c9 f12">${ctime}</span>
+										</p>
+									</li>`
+								}
+								loading = true;
+							}
+						}
+						if(page != 1 && data.length < 10) {
+							loading = false;
+							html += `<li class="bg-ff br3 p-r mb10">
+										<p class="c9 ptb10 ta-center">没有更多数据<p/>
+									</li>`
+						}
+						$('.records_content').append(html);
+						remove_load();
+					}, 'json');
+				}
+				record();
+				//滚动加载
+				$(window).scroll(function() {
+					if($(document).scrollTop() == 0) {
+						return;
+					} else if($(document).scrollTop() >= $(document).height() - $(window).height() - 10) {
+						if(loading == true) {
+							loading = false;
+							setTimeout(function() {
+								page++;
+								record();
+							}, 17);
+						}
+					}
+				});
+			})
+		</script>
+	</body>
+
+</html>

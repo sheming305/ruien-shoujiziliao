@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css?112" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css?-6" />
+		<title>共享护理床</title>
+	</head>
+
+	<body>
+		<section>
+			<p class="c2 ta-center f12 mtb10">首次使用可享受折扣价</p>
+			<ul class="payment_content">
+				<li class="mlr30 mb10 box-shadow br3 p10 ta-center" style="height: 1.2rem;">
+					<p class="fw-bold">--</p>
+					<label for="massage" style="display: inline-block;">
+						<input type="checkbox" hidden id="massage"  class="payment_input" name="money" value="29"/>
+						<span class="massage color5 ta-center bdb mt10 br5">--</span>
+					</label>
+				</li>
+				<li class="mlr30 mb10 box-shadow br3 p10 ta-center" style="height: 1.2rem;">
+					<p class="fw-bold">--</p>
+					<label for="Air" style="display: inline-block;">
+						<input type="checkbox" hidden id="Air"  class="payment_input" name="money" value="27"/>
+						<span class="massage color5 ta-center bdb mt10 br5">--</span>
+					</label>
+				</li>
+				<li class="mlr30 mb10 box-shadow br3 p10 ta-center" style="height: 1.2rem;">
+					<p class="fw-bold">--</p>
+					<label for="oxygen" style="display: inline-block;">
+						<input type="checkbox" hidden id="oxygen"  class="payment_input" name="money" value="28"/>
+						<span class="massage color5 ta-center bdb mt10 br5">--</span>
+					</label>
+				</li>
+			</ul>
+			<div>
+				<h3 class="f16 fw-bold pl15 mb10">支付方式</h3>
+				<ul class="plr15 pay_class_parent">
+					<li class="pay_class pay_class_wx active">微信支付</li>
+					<li class="pay_class pay_class_qb">钱包支付
+						<span class="right mr30 f13 c9 balance">余额：￥--</span>
+					</li>
+				</ul>
+				<div class="ta-center fw-bold ptb20">
+					<span class="f13">需支付</span>
+					<span class="f16 price_money" style="color: #ff7575;">￥0.00</span>
+				</div>
+				<input type="button" name="" id="payment_sub" value="立即支付" class="f15" />
+			</div>
+			<div class="elastic br5">
+				<p class="p10 ta-center mt20">确认购买？</p>
+				<input type="button" name="" id="payment_btn" value="确认" class="f15 mt20 payment_btn" />
+				<input type="button" name="" id="close" value="取消" class="f15 mt20 payment_btn" style="background: #b5b8b9;" />
+			</div>
+		</section>
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js?119"></script>
+		<script type="text/javascript">
+			$(function() {
+				var token = user_token();
+				var url = dlcUrl();
+				var taocan_id = []; //套餐ID
+				var openid = user_openid();
+				var macno = getQueryString("macno"); //设备编号
+				var device_id = ""; //设备ID
+				var o_id = getQueryString("order_id"); //订单ID
+				var price_money; //套餐价格
+				var order_id; //新订单ID
+				var off = true;
+				var pay_type = "weixin"; //支付方式，默认微信
+				var c_type = 1; //code的状态，0设备使用中，1正常，2订单使用中
+				//点击事件触发
+				function click() {
+					//选择支付方式
+					$('.pay_class_parent li').on('click', function() {
+						$(this).addClass("active").siblings().removeClass("active");
+						var ind = $(this).index();
+						if(ind == 0) {
+							pay_type = "weixin";
+						} else if(ind == 1) {
+							pay_type = "money";
+						}
+					});
+					//计算选中的价格
+					$('.payment_input').on('change', function() {
+						price_money = 0;
+						taocan_id = [];
+						$('.payment_input[type=checkbox]:checked').each(function() {
+							price_money = price_money + ($(this).val() * 1);
+							taocan_id.push($(this).attr('id'));
+						});
+						$('.price_money').html('￥' + price_money.toFixed(2));
+						taocan_id = String(taocan_id);
+					});
+					//点击下单
+					$('#payment_sub').on('click', function() {
+						console.log(taocan_id);
+						if(taocan_id.length == 0) {
+							_alert("请选择套餐");
+						} else if(off == true) {
+							if(pay_type == "money") {
+								$('.elastic').show();
+								$('#payment_btn').on('click', function() {
+									$('.elastic').hide();
+									if(off == true) {
+										off = false;
+										if(!!o_id && c_type == 2) {
+											load();
+											child_order(taocan_id)
+										} else if(c_type == 1) {
+											load();
+											place_order(taocan_id);
+										} else {
+											_alert("订单已存在")
+										}
+									}
+								});
+								$('#close').on('click', function() {
+									off = true;
+									$('.elastic').hide();
+								});
+							}
+							if(pay_type == "weixin") {
+								if(off == true) {
+									off = false;
+									if(!!o_id && c_type == 2) {
+										load();
+										child_order(taocan_id)
+									} else if(c_type == 1) {
+										load();
+										place_order(taocan_id);
+									} else {
+										_alert("订单已存在")
+									}
+								}
+							}
+						}
+
+					})
+				}
+				//套餐 
+				(function package() {
+					load();
+					var obj = {
+						"HTTP_API": "vv/taocan/api/index/allTaocan",
+						"token": token,
+						"macno": macno
+					}
+					$.post(url, obj, function(data) {
+						c_type = data.code;
+						var html = "";
+						if(c_type == 1 || c_type == 2) {
+							var res = data.data.list;
+							device_id = data.data.device_id;
+							console.log(device_id);
+							for(i in res) {
+								var id = res[i].id; //套餐ID
+								var title = res[i].title; //套餐名称
+								var keep_minutes = res[i].keep_minutes; //套餐时间：分钟
+								var price = returnFloat(res[i].price); //价格
+								var classid = "class" + id; //自定义classid
+								html += `<li class="mlr30 mb10 box-shadow br3 p10 ta-center ${classid}" style="height: 1.2rem;">
+											<p class="fw-bold">${title}套餐选择</p>
+											<label for="${id}" style="display: inline-block;">
+												<input type="checkbox" hidden id="${id}"  class="payment_input" name="money" value="${price}"/>
+												<span class="massage color5 ta-center bdb mt10 br5">${keep_minutes}分钟/${price}元</span>
+											</label>
+										</li>`
+							}
+						}
+						if(c_type == 0) {
+							_alert(data.msg);
+							var time_s = setTimeout(function() {
+								WeixinJSBridge.call('closeWindow');
+							}, 2000)
+						} else if(!o_id && c_type == 2) {
+							_alert("订单已存在");
+							var ctime=setTimeout(function(){
+								location.href = "device_list.html"
+							},2000)
+						}
+						$('.payment_content').html(html);
+						if(!!o_id) {
+							order_details();
+							$('.payment_content li').css("display", "none");
+						}
+						click();
+						remove_load();
+					}, 'json');
+				}());
+				//订单详情
+				function order_details() {
+					var obj = {
+						"HTTP_API": "vv/order/api/index/details",
+						"o_id": o_id, //订单号
+						"token": token
+					}
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						if(code == 1) {
+							var data = data.data.goods_list;
+							//console.log(data);
+							for(i in data) {
+								var id = data[i].taocanid; //套餐ID
+								var to_time = (data[i].to_time) * 1000; //结束时间
+								//根据时间判断
+								var endtime = new Date(to_time); //结束时间
+								var nowtime = new Date(); //当前时间
+								var lefttime = parseInt((endtime.getTime() - nowtime.getTime()) / 1000); // 剩余时间
+								var classid = ".class" + id; //自定义classid
+								if(lefttime > 0) {
+									$(classid).remove(); //删除dom
+								}
+							}
+							$('.payment_content li').show();
+							remove_load();
+						}
+					}, 'json');
+				}
+				//获取余额
+				(function balance() {
+					//加载动画
+					var obj = {
+						"HTTP_API": "vv/usercenter/api/user/myWallet",
+						"token": token
+					}
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						if(code == 1) {
+							var uMoney = Number(data.data.uMoney);
+							var umoneygift = Number(data.data.umoneygift);
+							uMoney = uMoney + umoneygift;
+							uMoney = returnFloat(uMoney)
+							$('.balance').html('余额：￥' + uMoney);
+						}
+					}, 'json')
+				}());
+				//生成订单或者余额支付
+				function place_order(taocan_id) {
+					var obj = {
+						"HTTP_API": "vv/device/api/index/makeOrder",
+						"device_id": device_id, //设备id
+						"token": token,
+						"taocan_id": taocan_id, //套餐id（多个套餐以英文逗号拼接）
+						"pay_type": pay_type //money余额weixin微信支付
+					}
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						if(code == 1 || code == 2) { //1是微信成功，2是余额成功
+							var data = data.data;
+							var money = data.money;
+							order_id = data.oid; //订单号
+							var paylog = data.paylog;
+							if(pay_type == "weixin") {
+								wx_pay(paylog, money)
+							} else if(pay_type == "money") {
+								location.href = "Add_device.html?order_id=" + order_id + "&macno=" + macno;
+							}
+						} else {
+							remove_load();
+							_alert(data.msg);
+							off = true;
+						}
+						console.log(data);
+					}, 'json');
+				}
+				//生成子订单并且支付
+				function child_order(taocan_id) {
+					var obj = {
+						"HTTP_API": "vv/device/api/index/updateSonOrder",
+						"device_id": device_id, //设备id
+						"token": token,
+						"taocan_id": taocan_id, //套餐id（多个套餐以英文逗号拼接）
+						"pay_type": pay_type, //money余额weixin微信支付
+						"oid": o_id
+					}
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						if(code == 1 || code == 2) { //1是微信成功，2是余额成功
+							var data = data.data;
+							var money = data.money;
+							var paylog = data.paylog;
+							if(pay_type == "weixin") {
+								wx_pay(paylog, money)
+							} else if(pay_type == "money") {
+								location.href = "Add_device.html?order_id=" + o_id + "&macno=" + macno;
+							}
+						} else {
+							remove_load();
+							_alert(data.msg);
+							off = true;
+						}
+						console.log(data);
+					}, 'json');
+				}
+				//微信支付返回数据
+				function wx_pay(paylog, money) {
+					var obj = {
+						"HTTP_API": "vv/weixinpay/api/index/pay",
+						"openid": openid,
+						"money": money, //支付金额
+						"trade_no": paylog, //订单号
+						"trade_type": "JSAPI",
+						"token": token
+					}
+					$.post(url, obj, function(data) {
+						console.log(data);
+						var code = data.code;
+						if(code == 1) {
+							jsApiParameters = data.data;
+							remove_load();
+							callpay();
+						}
+					}, "json")
+				}
+				//调用微信JS api 支付
+				function jsApiCall() {
+					WeixinJSBridge.invoke(
+						'getBrandWCPayRequest',
+						jsApiParameters, // 提交的支付信息
+						function(res) {
+							WeixinJSBridge.log(res.err_msg);
+							// alert(JSON.stringify(res));
+							off = true;
+							if(res.err_msg == 'get_brand_wcpay_request:ok') {
+								if(!!o_id) {
+									location.href = "Add_device.html?order_id=" + o_id + "&macno=" + macno;
+								} else {
+									location.href = "Add_device.html?order_id=" + order_id + "&macno=" + macno;
+								}
+							} else {
+								off = true;
+								_alert("取消支付")
+							}
+						}
+					);
+				}
+				//调用微信 支付
+				function callpay() {
+					if(typeof WeixinJSBridge == "undefined") {
+						if(document.addEventListener) {
+							document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+
+						} else if(document.attachEvent) {
+							document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+							document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+						}
+					} else {
+						jsApiCall();
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

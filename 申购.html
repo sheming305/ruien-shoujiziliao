@@ -1,0 +1,957 @@
+<!--{extend name="base" /} {block name="body"}-->
+<!--&lt;!&ndash;申请审批&ndash;&gt;-->
+<!--<style>-->
+    <!--.pop,#pop_one {-->
+        <!--display: none;-->
+        <!--width: 400px;-->
+        <!--min-height: 320px;-->
+        <!--max-height: 300px;-->
+        <!--height:320px;-->
+        <!--position: absolute;-->
+        <!--top: 0;-->
+        <!--left: 0;-->
+        <!--bottom: 0;-->
+        <!--right: 0;-->
+        <!--margin: auto;-->
+        <!--padding: 25px;-->
+        <!--z-index: 130;-->
+        <!--border-radius: 8px;-->
+        <!--background-color: #fff;-->
+        <!--box-shadow: 0 3px 18px rgba(100, 0, 0, .5);-->
+    <!--}-->
+    <!--.pop .pop-top,#pop_one .pop-top{-->
+        <!--height:40px;-->
+        <!--width:100%;-->
+        <!--border-bottom: 1px #E5E5E5 solid;-->
+    <!--}-->
+    <!--.pop .pop-top h2,#pop_one .pop-top h2{-->
+        <!--float: left;-->
+        <!--display:black-->
+    <!--}-->
+    <!--.pop .pop-top span,#pop_one .pop-top span{-->
+        <!--float: right;-->
+        <!--cursor: pointer;-->
+        <!--font-weight: bold;-->
+        <!--display:black-->
+    <!--}-->
+    <!--.pop .pop-foot,#pop_one .pop-foot{-->
+        <!--height:50px;-->
+        <!--line-height:50px;-->
+        <!--width:100%;-->
+        <!--border-top: 1px #E5E5E5 solid;-->
+        <!--text-align: right;-->
+    <!--}-->
+    <!--.pop .pop-cancel,.pop .pop-ok ,#pop_one .pop-cancel,#pop_one .pop-ok{-->
+        <!--padding:8px 15px;-->
+        <!--margin:15px 5px;-->
+        <!--border: none;-->
+        <!--border-radius: 5px;-->
+        <!--background-color: #337AB7;-->
+        <!--color: #fff;  cursor:pointer;-->
+    <!--}-->
+    <!--.pop .pop-cancel,#pop_one .pop-cancel{-->
+        <!--background-color: #FFF;-->
+        <!--border:1px #CECECE solid;-->
+        <!--color: #000;-->
+    <!--}-->
+    <!--.pop .pop-content,#pop_one .pop-content{-->
+        <!--height: 235px;-->
+    <!--}-->
+    <!--.pop .pop-content-left,#pop_one .pop-content-left{-->
+        <!--float: left;-->
+    <!--}-->
+    <!--.pop .pop-content-right,#pop_one .pop-content-right{-->
+        <!--width:370px;-->
+        <!--float: left;-->
+        <!--padding-top:20px;-->
+        <!--/*padding-left:20px;*/-->
+        <!--font-size: 16px;-->
+        <!--line-height:35px;-->
+    <!--}-->
+    <!--.pop .pop-content-right p,#pop_one .pop-content-right p{-->
+        <!--width:100%;-->
+        <!--height:45px;-->
+        <!--line-height: 45px;-->
+    <!--}-->
+    <!--.pop .pop-content-right p span,#pop_one .pop-content-right p span{-->
+        <!--display: inline-block;-->
+        <!--width:80px;-->
+        <!--text-align: right;-->
+    <!--}-->
+    <!--.pop .pop-content-right p select,#pop_one .pop-content-right p select{-->
+        <!--display: inline-block;-->
+        <!--width:220px;-->
+        <!--height: 30px;-->
+    <!--}-->
+    <!--.pop .pop-content-right p input,#pop_one .pop-content-right p input{-->
+        <!--display: inline-block;-->
+        <!--width:220px;-->
+        <!--height: 25px;-->
+    <!--}-->
+    <!--.pop .bgPop,#pop_one .bgPop{-->
+        <!--display: none;-->
+        <!--position: absolute;-->
+        <!--z-index: 129;-->
+        <!--left: 0;-->
+        <!--top: 0;-->
+        <!--width: 100%;-->
+        <!--height: 100%;-->
+        <!--background: rgba(0,0,0,.2);-->
+    <!--}-->
+<!--</style>-->
+<!--<form style="margin:15px auto" class="layui-form" action="">-->
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">流程名</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input style="width:600px;" type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item layui-form-text">-->
+        <!--<label class="layui-form-label">审批说明</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<textarea style="width:1000px;" placeholder="请输入审批说明" class="layui-textarea"></textarea>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</form>-->
+<!--<fieldset class="layui-elem-field layui-field-title" style="margin: 20px 15px;">-->
+    <!--<legend>流程详情</legend>-->
+<!--</fieldset>-->
+<!--<div class="site-demo-button" id="layerDemo" style="margin: 20px 15px;">-->
+    <!--<button class="layui-btn click_pop">+添加审批</button>-->
+<!--</div>-->
+
+<!--&lt;!&ndash;弹出层1&ndash;&gt;-->
+<!--<form class="pop layui-form" id="pop_top">-->
+    <!--<div class="pop-top" id="move_part">-->
+        <!--<h2>添加审批人</h2>-->
+        <!--<span class="pop-close">Ｘ</span>-->
+    <!--</div>-->
+    <!--<div class="pop-content">-->
+        <!--<div class="pop-content-left">-->
+            <!--<img src="" alt="" class="teathumb">-->
+        <!--</div>-->
+        <!--<div class="pop-content-right">-->
+            <!--<div class="layui-inline">-->
+                <!--<label class="layui-form-label">科&nbsp;&nbsp;室:</label>-->
+                <!--<div class="layui-input-inline">-->
+                    <!--<select id="sel" name="modules" lay-verify="required" lay-search="">-->
+                        <!--<option value="">直接选择或搜索选择科室</option>-->
+                        <!--<option value="妇产科1">妇产科1</option>-->
+                        <!--<option value="妇产科2">妇产科2</option>-->
+                        <!--<option value="男科1">男科1</option>-->
+                        <!--<option value="男科2">男科2</option>-->
+                    <!--</select>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div style="margin-top:15px;" class="layui-inline">-->
+                <!--<label class="layui-form-label">审批人:</label>-->
+                <!--<div class="layui-input-inline">-->
+                    <!--<select id="sel_one" name="modules" lay-verify="required" lay-search="">-->
+                        <!--<option value="">请选择审批人</option>-->
+                        <!--<option value="张三1">张三1</option>-->
+                        <!--<option value="张三2">张三2</option>-->
+                    <!--</select>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div style="margin-top:15px;" class="layui-inline">-->
+                <!--<label class="layui-form-label">审批说明:</label>-->
+                <!--<div class="layui-input-inline">-->
+                    <!--<input  id="test" class="layui-input" type="text" placeholder="请输入说明文字">-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--&lt;!&ndash;备注&ndash;&gt;-->
+            <!--<div style="margin-top:15px;" class="layui-inline">-->
+                <!--<label class="layui-form-label">备注:</label>-->
+                <!--<div class="layui-input-inline">-->
+                    <!--<input  id="remark" class="layui-input" type="text" placeholder="备注选填">-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="pop-foot">-->
+        <!--<input onclick="se();" id="addTable" type="button" value="添加" class="pop-ok">-->
+        <!--<input type="button" value="关闭" class="pop-cancel pop-close">-->
+    <!--</div>-->
+<!--</form>-->
+
+<!--&lt;!&ndash;弹出层2&ndash;&gt;-->
+<!--<div class="pop1 layui-form" id="pop_one">-->
+    <!--<form>-->
+        <!--<div class="pop-top">-->
+            <!--<h2>添加审批人</h2>-->
+            <!--<span class="pop-close">Ｘ</span>-->
+        <!--</div>-->
+        <!--<div class="pop-content">-->
+            <!--<div class="pop-content-left">-->
+                <!--<img src="" alt="" class="teathumb">-->
+            <!--</div>-->
+            <!--<div class="pop-content-right">-->
+                <!--<div class="layui-inline">-->
+                    <!--<label class="layui-form-label">科&nbsp;&nbsp;室:</label>-->
+                    <!--<div class="layui-input-inline">-->
+                        <!--<select id="sell" name="modules" lay-verify="required" lay-search="">-->
+                            <!--<option value="">直接选择或搜索选择科室</option>-->
+                            <!--<option value="妇产科1">妇产科1</option>-->
+                            <!--<option value="妇产科2">妇产科2</option>-->
+                            <!--<option value="男科1">男科1</option>-->
+                            <!--<option value="男科2">男科2</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div style="margin-top:15px;" class="layui-inline">-->
+                    <!--<label class="layui-form-label">审批人:</label>-->
+                    <!--<div class="layui-input-inline">-->
+                        <!--<select id="sell_one" name="modules" lay-verify="required" lay-search="">-->
+                            <!--<option value="">请选择审批人</option>-->
+                            <!--<option value="张三1">张三1</option>-->
+                            <!--<option value="张三2">张三2</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div style="margin-top:15px;" class="layui-inline">-->
+                    <!--<label class="layui-form-label">审批说明:</label>-->
+                    <!--<div class="layui-input-inline">-->
+                        <!--<input  id="testL" class="layui-input" type="text" placeholder="请输入说明文字">-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;备注&ndash;&gt;-->
+                <!--<div style="margin-top:15px;" class="layui-inline">-->
+                    <!--<label class="layui-form-label">备注:</label>-->
+                    <!--<div class="layui-input-inline">-->
+                        <!--<input  id="my_remark" class="layui-input" type="text" placeholder="备注选填">-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</form>-->
+    <!--<div class="pop-foot">-->
+        <!--<input onclick="sell();" type="submit" value="更新" class="pop-ok">-->
+        <!--<input type="button" value="关闭" class="pop-cancel pop-close">-->
+    <!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash;关联表格&ndash;&gt;-->
+<!--<form>-->
+    <!--<div class="layui-form" style="margin:10px 25px">-->
+        <!--<table class="layui-table" id="mytable">-->
+            <!--<colgroup>-->
+                <!--<col width="100">-->
+                <!--<col width="150">-->
+                <!--<col width="250">-->
+                <!--<col width="250">-->
+                <!--<col width="200">-->
+                <!--<col>-->
+            <!--</colgroup>-->
+            <!--<thead>-->
+            <!--<tr>-->
+                <!--<th>流程顺序</th>-->
+                <!--<th>科室</th>-->
+                <!--<th>审批人</th>-->
+                <!--<th>流程说明</th>-->
+                <!--<th>备注</th>-->
+                <!--<th>操作</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody id="listTable">-->
+            <!--<tr>-->
+
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item" style="margin:15px 25px;">-->
+        <!--<button type="button" class="layui-btn" lay-submit="" lay-filter="demo2">立即提交</button>-->
+    <!--</div>-->
+<!--</form>-->
+
+<!--<script>-->
+
+<!--</script>-->
+<!--<script type="text/javascript">-->
+    <!---->
+<!--</script>-->
+<!--<script>-->
+    <!--// 模态框-->
+    <!--$(document).ready(function () {-->
+        <!--$('.pop-close').click(function () {-->
+            <!--$('.bgPop,.pop').hide();-->
+        <!--});-->
+
+        <!--$('.click_pop').click(function () {-->
+            <!--$('.bgPop,.pop').show();-->
+        <!--});-->
+
+        <!--$('.pop-close').click(function () {-->
+            <!--$('.bgPop,.pop1').hide();-->
+        <!--});-->
+    <!--});-->
+
+    <!--function delRow(otr) {-->
+        <!--var targetTable = document.getElementById("mytable");-->
+        <!--var a=otr.parentNode.parentNode;-->
+        <!--a.parentNode.removeChild(a);-->
+    <!--}-->
+    <!--// 同步模态框1表单表格数据-->
+    <!--var num =0;-->
+    <!--function se() {-->
+        <!--//num ++;-->
+        <!--var sel = document.getElementById("sel").value;-->
+        <!--var sel_one = document.getElementById("sel_one").value;-->
+        <!--var test = document.getElementById("test").value;-->
+            <!--var remark = document.getElementById("remark").value;-->
+        <!--var tr=document.createElement("tr");-->
+        <!--var td1=document.createElement("td");-->
+        <!--if(td1.innerHTML=1){-->
+            <!--// var num =0;-->
+            <!--num ++;-->
+            <!--td1.innerHTML=num;-->
+        <!--}else{-->
+            <!--num&#45;&#45;;-->
+            <!--td1.innerHTML=num;-->
+        <!--}-->
+        <!--var td2=document.createElement("td");-->
+        <!--var td3=document.createElement("td");-->
+        <!--var td4=document.createElement("td");-->
+
+        <!--var td5=document.createElement("td");-->
+        <!--var td6=document.createElement("td");-->
+        <!--td6.innerHTML="<a href='javascript:;' " +-->
+            <!--"onclick='amend(this)' class=\"layui-btn layui-btn-xs click_pop_one\" lay-event=\"edit\">编辑</a>" +-->
+            <!--"<a href='javascript:;' onclick='delRow(this);'\n" +-->
+            <!--"class=\"layui-btn layui-btn-danger layui-btn-xs\">删除</a>";-->
+        <!--// num ++;-->
+        <!--// td1.innerHTML=num;-->
+        <!--var str=sel;-->
+        <!--td2.innerHTML=str;-->
+        <!--var sttr=sel_one;-->
+        <!--td3.innerHTML=sttr;-->
+        <!--var sttrr=test;-->
+        <!--td4.innerHTML=sttrr;-->
+
+        <!--var stttrr=remark;-->
+        <!--td5.innerHTML=stttrr;-->
+        <!--var tab=document.getElementById("mytable");-->
+        <!--tab.appendChild(tr);-->
+        <!--tr.appendChild(td1);-->
+        <!--tr.appendChild(td2);-->
+        <!--tr.appendChild(td3);-->
+        <!--tr.appendChild(td4);-->
+        <!--tr.appendChild(td5);-->
+        <!--tr.appendChild(td6);-->
+
+    <!--}-->
+
+    <!--//表格编辑按钮关联弹出框2窗口相关的内容-->
+    <!--function modify(obj){-->
+        <!--var oTr = obj.parentNode.parentNode;-->
+        <!--var aTd = oTr.getElementsByTagName('td');-->
+        <!--rowIndex = obj.parentNode.parentNode.rowIndex;-->
+        <!--oNum.value = aTd[2].innerHTML;-->
+        <!--oUser.value = aTd[3].innerHTML;-->
+        <!--oPwd.value = aTd[4].innerHTML;-->
+        <!--oMark.value = aTd[5].innerHTML;-->
+        <!--//alert(i);-->
+    <!--}-->
+
+    <!--// 编辑当前行弹出的弹出框2里面的内容-->
+    <!--function amend(obj) {-->
+        <!--var oNum = document.getElementById('sell');-->
+        <!--var oUser = document.getElementById('sell_one');-->
+        <!--var oPwd = document.getElementById('testL');-->
+
+        <!--var oMark=document.getElementById('my_remark');-->
+        <!--var oTr = obj.parentNode.parentNode;-->
+        <!--var aTd = oTr.getElementsByTagName('td');-->
+        <!--rowIndex = obj.parentNode.parentNode.rowIndex;-->
+        <!--oNum.value = aTd[1].innerHTML;-->
+        <!--oUser.value = aTd[2].innerHTML;-->
+        <!--oPwd.value = aTd[3].innerHTML;-->
+
+        <!--oMark.value = aTd[4].innerHTML;-->
+        <!--var pop_one=document.getElementById("pop_one");-->
+        <!--pop_one.style.display="block";-->
+    <!--}-->
+
+    <!--// 触发弹出框2按钮更新功能同步到表格当前行-->
+    <!--function sell() {-->
+        <!--var oNum = document.getElementById('sell');-->
+        <!--var oUser = document.getElementById('sell_one');-->
+        <!--var oPwd = document.getElementById('testL');-->
+
+        <!--var oMark=document.getElementById('my_remark');-->
+        <!--var oMytable = document.getElementById('mytable');-->
+        <!--//alert(rowIndex);-->
+        <!--//var aTd = rowIndex.cells;-->
+        <!--console.log(oMytable.rows[rowIndex].cells);-->
+        <!--oMytable.rows[rowIndex].cells[1].innerHTML = oNum.value;-->
+        <!--oMytable.rows[rowIndex].cells[2].innerHTML = oUser.value;-->
+        <!--oMytable.rows[rowIndex].cells[3].innerHTML = oPwd.value;-->
+
+        <!--oMytable.rows[rowIndex].cells[4].innerHTML = oMark.value;-->
+        <!--var pop_one=document.getElementById("pop_one");-->
+        <!--pop_one.style.display="none";-->
+    <!--}-->
+<!--</script>-->
+
+<!--<script>-->
+    <!--//排序-->
+    <!--function sort(e) {-->
+        <!--var evt = e || event;-->
+        <!--var targetTable = document.getElementById("mytable");-->
+        <!--targetTable.deleteRow(~~evt.target.parentNode.parentNode.cells[0].innerHTML);-->
+        <!--for (var i = 0; i<targetTable.rows.length; i++) {-->
+            <!--if (i != 0)-->
+                <!--targetTable.rows[i].cells[0].innerHTML = i;-->
+        <!--}-->
+    <!--}-->
+
+
+
+<!--</script>-->
+
+<!--<script>-->
+    <!--// layui.use(['form', 'layedit', 'laydate'], function(){-->
+    <!--//     var form = layui.form-->
+    <!--//         ,layer = layui.layer-->
+    <!--//         ,layedit = layui.layedit-->
+    <!--//         ,laydate = layui.laydate;-->
+    <!--//-->
+    <!--//     //日期-->
+    <!--//     laydate.render({-->
+    <!--//         elem: '#date'-->
+    <!--//     });-->
+    <!--//     laydate.render({-->
+    <!--//         elem: '#date1'-->
+    <!--//     });-->
+    <!--//-->
+    <!--//     //创建一个编辑器-->
+    <!--//     var editIndex = layedit.build('LAY_demo_editor');-->
+    <!--//-->
+    <!--//     //自定义验证规则-->
+    <!--//     form.verify({-->
+    <!--//         title: function(value){-->
+    <!--//             if(value.length < 5){-->
+    <!--//                 return '标题至少得5个字符啊';-->
+    <!--//             }-->
+    <!--//         }-->
+    <!--//         ,pass: [/(.+){6,12}$/, '密码必须6到12位']-->
+    <!--//         ,content: function(value){-->
+    <!--//             layedit.sync(editIndex);-->
+    <!--//         }-->
+    <!--//     });-->
+    <!--//-->
+    <!--//     //监听指定开关-->
+    <!--//     form.on('switch(switchTest)', function(data){-->
+    <!--//         layer.msg('开关checked：'+ (this.checked ? 'true' : 'false'), {-->
+    <!--//             offset: '6px'-->
+    <!--//         });-->
+    <!--//         layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)-->
+    <!--//     });-->
+    <!--//-->
+    <!--//     //监听提交-->
+    <!--//     form.on('submit(demo1)', function(data){-->
+    <!--//         layer.alert(JSON.stringify(data.field), {-->
+    <!--//             title: '最终的提交信息'-->
+    <!--//         })-->
+    <!--//         return false;-->
+    <!--//     });-->
+    <!--//-->
+    <!--//-->
+    <!--// });-->
+<!--</script>-->
+
+<!--{/block} {block name="js"}-->
+<!--<script type="text/javascript" src="__ADMIN__/js/formadd.js"></script>-->
+<!--{/block}-->
+
+
+
+{extend name="base" /} {block name="body"}
+<style>
+    .pop,#pop_one {
+        display: none;
+        width: 440px;
+        min-height: 400px;
+        max-height: 300px;
+        height:320px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        z-index: 130;
+        /*3.20去除了padding:25px*/
+        /*padding:25px;*/
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 3px 18px rgba(100, 0, 0, .5);
+    }
+    .pop .pop-top,#pop_one .pop-top{
+        background: #D0D0D0;
+        height:40px;
+        width:100%;
+        border-bottom: 2px #E5E5E5 solid;
+        /*3.20新增的鼠标移入效果*/
+        cursor:move;
+    }
+    /*3.20 h2 span新增了padding*/
+    .pop .pop-top h2,#pop_one .pop-top h2{
+        float: left;
+        display:black;
+        padding:8px;
+    }
+    .pop .pop-top span,#pop_one .pop-top span{
+        float: right;
+        cursor: pointer;
+        font-weight: bold;
+        display:black;
+        padding: 10px 22px;
+    }
+    .pop .pop-foot,#pop_one .pop-foot{
+        height:50px;
+        line-height:50px;
+        width:95%;
+        border-top: 1px #E5E5E5 solid;
+        text-align: right;
+    }
+    .pop .pop-cancel,.pop .pop-ok ,#pop_one .pop-cancel,#pop_one .pop-ok{
+        padding:8px 15px;
+        margin:15px 5px;
+        border: none;
+        border-radius: 5px;
+        background-color: #337AB7;
+        color: #fff;  
+        cursor:pointer;
+    }
+    .pop .pop-cancel,#pop_one .pop-cancel{
+        background-color: #FFF;
+        border:1px #CECECE solid;
+        color: #000;
+    }
+    .pop .pop-content,#pop_one .pop-content{
+        height: 300px;
+        /*text-align: center;*/
+    }
+    .pop .pop-content-left,#pop_one .pop-content-left{
+        float: left;
+    }
+    .pop .pop-content-right,#pop_one .pop-content-right{
+        width:360px;
+        float: left;
+        padding-top:20px;
+        padding-left:20px;
+        font-size: 16px;
+        line-height:35px;
+    }
+    .pop .pop-content-right p,#pop_one .pop-content-right p{
+        width:100%;
+        height:45px;
+        line-height: 45px;
+    }
+    .pop .pop-content-right p span,#pop_one .pop-content-right p span{
+        display: inline-block;
+        width:115px;
+        text-align: right;
+    }
+    .pop .pop-content-right p select,#pop_one .pop-content-right p select{
+        display: inline-block;
+        width:220px;
+        height: 30px;
+    }
+    .pop .pop-content-right p input,#pop_one .pop-content-right p input{
+        display: inline-block;
+        width:220px;
+        height: 25px;
+    }
+    .pop .bgPop,#pop_one .bgPop{
+        display: none;
+        position: absolute;
+        z-index: 129;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.2);
+    }
+
+</style>
+<form style="margin:15px auto" class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">申购标题</label>
+        <div class="layui-input-block">
+            <input required style="width:600px;" type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">申购详情</label>
+        <div class="layui-input-block">
+            <textarea required style="width:1000px;" placeholder="请输入审批说明" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="padding-right:25px;">
+        <label class="layui-form-label">预算金额</label>
+        <input required style="width:100px;height:34px;
+                   cursor: pointer;padding-left:10px;border:1px solid #ccc;background: #fff"
+               type="text" name="title" lay-verify="title" autocomplete="off"
+               placeholder="请输入金额" class="">&nbsp;&nbsp;元
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">审批方式</label>
+        <div class="layui-input-inline">
+            <select style="width:250px;" name="modules" lay-verify="required" lay-search="">
+                <option value="" selected>请选择审批方式</option>
+                <option value="">1</option>
+                <option value="">2</option>
+            </select>
+        </div>
+    </div>
+</form>
+<fieldset class="layui-elem-field layui-field-title" style="margin: 20px 15px;">
+    <legend>申购详情</legend>
+</fieldset>
+<div class="site-demo-button" id="layerDemo" style="margin: 20px 15px;">
+    <button onclick="tuoon()" id="click_pop" class="layui-btn click_pop">+添加申购</button>
+</div>
+
+<!--弹出层1-->
+<form class="pop layui-form" id="win">
+    <div class="pop-top" id="pop-top">
+        <h2>添加申购表信息</h2>
+        <span class="pop-close" id="close">Ｘ</span>
+    </div>
+    <div class="pop-content">
+        <div class="pop-content-left">
+            <img src="" alt="" class="teathumb">
+        </div>
+        <div class="pop-content-right">
+            <div class="layui-inline">
+                <label class="layui-form-label">设备编号:</label>
+                <div class="layui-input-inline">
+                    <select id="mySel" name="modules" lay-verify="required" lay-search="">
+                        <option value="">直接选择或搜索选择编号</option>
+                        <option value="妇产科1">妇产科1</option>
+                        <option value="妇产科2">妇产科2</option>
+                        <option value="男科1">男科1</option>
+                        <option value="男科2">男科2</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:15px;" class="layui-inline">
+                <label class="layui-form-label">名&nbsp;&nbsp;称:</label>
+                <div class="layui-input-inline">
+                    <select id="my_sel_one" name="modules" lay-verify="required" lay-search="">
+                        <option value="">请选择名称</option>
+                        <option value="张三1">张三1</option>
+                        <option value="张三2">张三2</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:15px;" class="layui-inline">
+                <label class="layui-form-label">数&nbsp;&nbsp;量:</label>
+                <div class="layui-input-inline">
+                    <input  id="list" class="layui-input" type="text" placeholder="请输入数量">
+                </div>
+            </div>
+
+            <div style="margin-top:15px;" class="layui-inline">
+                <label class="layui-form-label">预算金额:</label>
+                <div class="layui-input-inline">
+                    <input  id="pay" class="layui-input" type="text" placeholder="输入预算金额">
+                </div>
+            </div>
+            <!--备注-->
+            <div style="margin-top:15px;" class="layui-inline">
+                <label class="layui-form-label">备注:</label>
+                <div class="layui-input-inline">
+                    <input type="radio"  id="bei_zhu" name="sex" value="是" title="是">
+                    <input type="radio"  id="bei_zhu1" name="sex" value="否" title="否">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pop-foot">
+        <input onclick="se();" id="addTable" type="button" value="添加" class="pop-ok">
+        <input type="button" value="关闭" class="pop-cancel pop-close">
+    </div>
+</form>
+
+<!--弹出层2-->
+<div class="pop1 moveBar layui-form" id="pop_one">
+    <form>
+        <div class="pop-top" id="banner">
+            <h2>编辑申购表信息</h2>
+            <span class="pop-close" id="close1">Ｘ</span>
+        </div>
+        <div class="pop-content">
+            <div class="pop-content-left">
+                <img src="" alt="" class="teathumb">
+            </div>
+            <div class="pop-content-right">
+                <div class="layui-inline">
+                    <label class="layui-form-label">设备编号:</label>
+                    <div class="layui-input-inline">
+                        <select id="mySell" name="modules" lay-verify="required" lay-search="">
+                            <option value="">直接选择或搜索选择编号:</option>
+                            <option value="妇产科1">妇产科1</option>
+                            <option value="妇产科2">妇产科2</option>
+                            <option value="男科1">男科1</option>
+                            <option value="男科2">男科2</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:15px;" class="layui-inline">
+                    <label class="layui-form-label">名&nbsp;&nbsp;称:</label>
+                    <div class="layui-input-inline">
+                        <select id="sell_one_man" name="modules" lay-verify="required" lay-search="">
+                            <option value="">请选择名称</option>
+                            <option value="张三1">张三1</option>
+                            <option value="张三2">张三2</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:15px;" class="layui-inline">
+                    <label class="layui-form-label">数&nbsp;&nbsp;量:</label>
+                    <div class="layui-input-inline">
+                        <input  id="testL_list" class="layui-input" type="text" placeholder="请输入数量">
+                    </div>
+                </div>
+
+                <div style="margin-top:15px;" class="layui-inline">
+                    <label class="layui-form-label">预算金额:</label>
+                    <div class="layui-input-inline">
+                        <input  id="my_pay" class="layui-input" type="text" placeholder="输入预算金额">
+                    </div>
+                </div>
+
+                <!--备注-->
+                <div style="margin-top:15px;" class="layui-inline">
+                    <label class="layui-form-label">备注:</label>
+                    <div class="layui-input-inline">
+                        <input type="radio"  id="beizhu" name="sex" value="是" title="是">
+                        <input type="radio" id="beizhu1" name="sex" value="否" title="否">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="pop-foot">
+        <input onclick="sell();" type="submit" value="更新" class="pop-ok">
+        <input type="button" value="关闭" class="pop-cancel pop-close">
+    </div>
+</div>
+<!--关联表格-->
+<form>
+    <div class="layui-form" style="margin:10px 25px">
+        <table class="layui-table" id="tab">
+            <colgroup>
+                <col width="200">
+                <col width="250">
+                <col width="150">
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>设备信息编号</th>
+                <th>名称</th>
+                <th>数量</th>
+                <th>预算金额(元)</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="my_listTable">
+            <tr>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="layui-form-item" style="margin:15px 25px;">
+        <button type="button" class="layui-btn" lay-submit="" lay-filter="demo2">立即提交</button>
+        <button type="button" class="layui-btn layui-btn-warm">保存</button>
+    </div>
+</form>
+
+<script>
+    // 鼠标拖动模态框
+    function tuoon()
+    {
+        var oWin = document.getElementById("win");
+        var oBtn = document.getElementById("click_pop");
+        var oClose = document.getElementById("close");
+        var oH2 = document.getElementById("pop-top");
+        var bDrag = false;
+        var disX = disY = 0;
+        oBtn.onclick = function ()
+        {
+            oWin.style.display = "block"
+        };
+        oClose.onclick = function ()
+        {
+            oWin.style.display = "none"
+
+        };
+        oClose.onmousedown = function (event)
+        {
+            (event || window.event).cancelBubble = true;
+        };
+        oH2.onmousedown = function (event)
+        {
+            var event = event || window.event;
+            bDrag = true;
+            disX = event.clientX - oWin.offsetLeft;
+            disY = event.clientY - oWin.offsetTop;
+            this.setCapture && this.setCapture();
+            return false
+        };
+        document.onmousemove = function (event)
+        {
+            if (!bDrag) return;
+            var event = event || window.event;
+            var iL = event.clientX - disX;
+            var iT = event.clientY - disY;
+            var maxL = document.documentElement.clientWidth - oWin.offsetWidth;
+            var maxT = document.documentElement.clientHeight - oWin.offsetHeight;
+            iL = iL < 0 ? 0 : iL;
+            iL = iL > maxL ? maxL : iL;
+            iT = iT < 0 ? 0 : iT;
+            iT = iT > maxT ? maxT : iT;
+
+            oWin.style.marginTop = oWin.style.marginLeft = 0;
+            oWin.style.left = iL + "px";
+            oWin.style.top = iT + "px";
+            return false
+        };
+        document.onmouseup = window.onblur = oH2.onlosecapture = function ()
+        {
+            bDrag = false;
+            oH2.releaseCapture && oH2.releaseCapture();
+        };
+
+    };
+
+</script>
+
+
+<script>
+    // 模态框
+    $(document).ready(function () {
+        $('.pop-close').click(function () {
+            $('.bgPop,.pop').hide();
+        });
+
+        $('.click_pop').click(function () {
+            $('.bgPop,.pop').show();
+        });
+
+        $('.pop-close').click(function () {
+            $('.bgPop,.pop1').hide();
+        });
+    });
+
+    function delRow(otr) {
+        var targetTable = document.getElementById("tab");
+        var a=otr.parentNode.parentNode;
+        a.parentNode.removeChild(a);
+    }
+    // 同步模态框1表单表格数据
+
+    function se() {
+        var sel = document.getElementById("mySel").value;
+        var sel_one = document.getElementById("my_sel_one").value;
+        var test = document.getElementById("list").value;
+        var pay = document.getElementById("pay").value;
+        var bei_zhu = document.getElementById("bei_zhu").value;
+        var tr=document.createElement("tr");
+        var td1=document.createElement("td");
+
+        var td2=document.createElement("td");
+        var td3=document.createElement("td");
+        var td4=document.createElement("td");
+        var td5=document.createElement("td");
+        var td6=document.createElement("td");
+        td6.innerHTML="<a href='javascript:;' onclick='amend(this)' id='click_pop1' class=\"layui-btn layui-btn-xs click_pop_one\" lay-event=\"edit\">编辑</a><a href='javascript:;' onclick='delRow(this);'\n" +
+            "class=\"layui-btn layui-btn-danger layui-btn-xs\">删除</a>";
+        td1.innerHTML=sel;
+        var str=sel_one;
+        td2.innerHTML=str;
+        var sttr=test;
+        td3.innerHTML=sttr;
+        var sttrr=pay;
+        td4.innerHTML=sttrr;
+        var stttrr=bei_zhu;
+        td5.innerHTML=stttrr;
+        var tab=document.getElementById("tab");
+        tab.appendChild(tr);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td4);
+        tr.appendChild(td5);
+        tr.appendChild(td6);
+    }
+
+    //表格编辑按钮关联弹出框2窗口相关的内容
+    function modify(obj){
+        var oTr = obj.parentNode.parentNode;
+        var aTd = oTr.getElementsByTagName('td');
+        rowIndex = obj.parentNode.parentNode.rowIndex;
+        oNum.value = aTd[1].innerHTML;
+        oUser.value = aTd[2].innerHTML;
+        oPwd.value = aTd[3].innerHTML;
+        //alert(i);
+    }
+
+    // 编辑当前行弹出的弹出框2里面的内容
+    function amend(obj) {
+        var oNum = document.getElementById('mySell');
+        var oUser = document.getElementById('sell_one_man');
+        var oPwd = document.getElementById('testL_list');
+        var oPay=document.getElementById('my_pay');
+        var oMark=document.getElementById('beizhu');
+        var oTr = obj.parentNode.parentNode;
+        var aTd = oTr.getElementsByTagName('td');
+        rowIndex = obj.parentNode.parentNode.rowIndex;
+        rowIndex = obj.parentNode.parentNode.rowIndex;
+        oNum.value = aTd[0].innerHTML;
+        oUser.value = aTd[1].innerHTML;
+        oPwd.value = aTd[2].innerHTML;
+        oPay.value = aTd[3].innerHTML;
+        oMark.value = aTd[4].innerHTML;
+        var pop_one=document.getElementById("pop_one");
+        pop_one.style.display="block";
+        // var oBox1 = document.getElementById("pop_one");
+        // var oBar1 = document.getElementById("banner");
+        // startDrag(oBar1, oBox1);
+
+    }
+
+    // 触发弹出框2按钮更新功能同步到表格当前行
+    function sell() {
+        var oNum = document.getElementById('mySell');
+        var oUser = document.getElementById('sell_one_man');
+        var oPwd = document.getElementById('testL_list');
+        var oPay=document.getElementById('my_pay');
+        var oMark=document.getElementById('beizhu');
+        var oMytable = document.getElementById('tab');
+
+        //alert(rowIndex);
+        //var aTd = rowIndex.cells;
+        console.log(oMytable.rows[rowIndex].cells);
+        oMytable.rows[rowIndex].cells[0].innerHTML = oNum.value;
+        oMytable.rows[rowIndex].cells[1].innerHTML = oUser.value;
+        oMytable.rows[rowIndex].cells[2].innerHTML = oPwd.value;
+        oMytable.rows[rowIndex].cells[3].innerHTML = oPay.value;
+        oMytable.rows[rowIndex].cells[4].innerHTML = oMark.value;
+        var pop_one=document.getElementById("pop_one");
+        pop_one.style.display="none";
+    }
+</script>
+
+{/block} {block name="js"}
+<script type="text/javascript" src="__ADMIN__/js/formadd.js"></script>
+{/block}

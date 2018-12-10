@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="jquery-3.2.1.min.js"></script>
+    <style>
+        p{
+            padding:10px;
+            border:1px solid #cccccc;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<p>1</p>
+
+<p>2</p>
+
+<p>3</p>
+
+<p>4</p>
+
+<p>5</p>
+
+<p>6</p>
+
+<p>7</p>
+
+<p>8</p>
+</body>
+</html>
+<script src="js/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("p").click(function(){
+            $("p").css("background-color","#fff");
+            $(this).css("background-color","#ff6600");
+        });
+    });
+</script>

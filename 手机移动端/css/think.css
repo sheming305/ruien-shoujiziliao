@@ -1,0 +1,178 @@
+*,
+p {
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-family: "Microsoft YaHei", "sans-serif";
+	width: 100%;
+	height: 100%;
+	/*position: absolute;*/
+	color: #333;
+	
+}
+
+body {
+	width: 100%;
+	max-width: 750px;
+	margin: 0 auto;
+	background: #F9F9F9;
+	font-size: .22rem;
+	color: #333;
+}
+
+button {
+	border: none;
+	outline: none;
+	background: transparent;
+	padding: 0;
+}
+
+img {
+	max-width: 100%;
+	vertical-align: middle;
+	background-image: ;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+ul,
+ol {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	text-decoration: none;
+	color: #707070;
+}
+
+li {
+	list-style: none;
+}
+
+a,
+a:hover,
+a:active,
+a:visited,
+a:link,
+a:focus {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	outline: none;
+	/*background: none;*/
+	text-decoration: none;
+}
+
+input:-webkit-autofill {
+	-webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
+
+::-webkit-input-placeholder {
+	/* WebKit browsers */
+	color: #C4C4C4;
+	font-size: .18rem;
+}
+
+:-moz-placeholder {
+	/* Mozilla Firefox 4 to 18 */
+	color: #C4C4C4;
+	font-size: .18rem;
+}
+
+::-moz-placeholder {
+	/* Mozilla Firefox 19+ */
+	color: #C4C4C4;
+	font-size: .18rem;
+}
+
+:-ms-input-placeholder {
+	/* Internet Explorer 10+ */
+	color: #C4C4C4;
+	font-size: .18rem;
+}
+
+
+/*媒体查询*/
+
+@media screen and (min-width: 320px) {
+	html {
+		font-size: 50px;
+	}
+}
+
+@media screen and (min-width: 360px) {
+	html {
+		font-size: 56.25px;
+	}
+}
+
+@media screen and (min-width: 375px) {
+	html {
+		font-size: 58.59375px;
+	}
+}
+
+@media screen and (min-width: 400px) {
+	html {
+		font-size: 62.5px;
+	}
+}
+
+@media screen and (min-width: 414px) {
+	html {
+		font-size: 64.6875px;
+	}
+}
+
+@media screen and (min-width: 440px) {
+	html {
+		font-size: 68.75px;
+	}
+}
+
+@media screen and (min-width: 480px) {
+	html {
+		font-size: 75px;
+	}
+}
+
+@media screen and (min-width: 520px) {
+	html {
+		font-size: 81.25px;
+	}
+}
+
+@media screen and (min-width: 560px) {
+	html {
+		font-size: 87.5px;
+	}
+}
+
+@media screen and (min-width: 600px) {
+	html {
+		font-size: 93.75px;
+	}
+}
+
+@media screen and (min-width: 640px) {
+	html {
+		font-size: 100px;
+	}
+}
+
+@media screen and (min-width: 680px) {
+	html {
+		font-size: 106.25px;
+	}
+}
+
+@media screen and (min-width: 750px) {
+	html {
+		font-size: 112.5px;
+	}
+}

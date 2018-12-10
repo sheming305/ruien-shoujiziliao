@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>w3c</title>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ol,ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        /*顶部导航*/
+        .top_wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            border-bottom: 1px solid #626571;
+            background-color: rgb(62,65,71);
+        }
+
+        .top_wrap_nav {
+            width: auto;
+            height: 80px;
+            margin: 0 20px;
+            transition: all 0.2s;
+        }
+
+        .logo_wrap .logo {
+            height: 100%;
+        }
+
+        .logo_wrap .logo_text {
+            display: inline-block;
+            margin-left: 20px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        .logo_wrap {
+            display: block;
+            float: left;
+            height: 100%;
+            padding: 5px;
+        }
+
+        .top_wrap_nav ul {
+            display: block;
+            float: left;
+            height: 100%;
+            margin-left: 10px;
+            color: #cbcbcb;
+            list-style: none;
+        }
+
+        .top_wrap_nav ul li {
+            float: left;
+            height: 100%;
+            line-height: 80px;
+            padding: 0 20px;
+            font-size: 22px;
+            transition: all 0.2s;
+        }
+
+        .top_wrap_nav ul li.active {
+            color: #6bc30d;
+            background-color: #333;
+        }
+
+        .content {
+            height: 1000px;
+            margin-top: 80px;
+            text-align: center;
+            font-size: 26px;
+        }
+
+        .sticky .top_wrap_nav{
+            height: 60px;
+        }
+
+        .sticky ul li {
+            line-height: 60px;
+            font-size: 20px;
+        }
+
+
+    </style>
+</head>
+<body>
+<nav class="top_wrap">
+    <div class="top_wrap_nav">
+        <div class="logo_wrap">
+            <img class="logo" src="http://cdn.res.w3cfuns.com/images/logos/logo.png"/>
+            <span class="logo_text">前端网</span>
+        </div>
+        <ul>
+            <li class="active">首页</li>
+            <li>笔记</li>
+            <li>话题</li>
+            <li>发现</li>
+            <li>教程</li>
+        </ul>
+    </div>
+</nav>
+
+<div class="content">
+    我是为了让页面可以滚动的占屏DIV
+</div>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+</body>
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript">
+    $(window).scroll(function() {
+        if ($(window).scrollTop() >= 100) {
+            $(".top_wrap").addClass("sticky");
+        } else {
+            $(".top_wrap").removeClass("sticky");
+        }
+    });
+</script>
+</html>

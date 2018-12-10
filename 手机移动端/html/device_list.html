@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css" />
+		<title>设备列表</title>
+	</head>
+
+	<body>
+		<section>
+			<ul class="mt6 mb10 f14 of-hidden device_content"style="height: auto;">
+				<!--<li class="ptb10 bg-ff plr10 mb6">
+					<p class="ptb4">
+						<span class="c9 pr10">设备编号</span>
+						<span>65465465</span>
+					</p>
+					<p class="ptb4">
+						<span class="c9 pr10">设备名称</span>
+						<span>东莞南城高盛科技大厦</span>
+						<span class="edit"></span>
+					</p>
+					<p class="ptb4">
+						<span class="c9 f12">2018-01-12</span>
+					</p>
+					<p class="ptb4 ta-right">
+						<span class="plr20 ptb4 cf br15-b-lr br15-l-tb" style="margin-right: -.2rem;background: #F9B552;" onclick="jump_now()">正在使用中</span>
+					</p>
+				</li>
+				<li class="ptb10 bg-ff plr10 mb6">
+					<p class="ptb4">
+						<span class="c9 pr10">设备编号</span>
+						<span>65465465</span>
+					</p>
+					<p class="ptb4">
+						<span class="c9 pr10">设备名称</span>
+						<span>东莞南城高盛科技大厦</span>
+						<span class="edit"></span>
+					</p>
+					<p class="ptb4">
+						<span class="c9 f12">2018-01-12</span>
+					</p>
+					<p class="ptb4 ta-right">
+						<span class="plr20 ptb4 cf br15-b-lr br15-l-tb" style="margin-right: -.2rem;background: #89C997;" onclick="jump_go()">去使用</span>
+					</p>
+				</li>-->
+			</ul>
+			<div class="masks"></div>
+			<div class="elastic br5" style="height: 1.6rem;">
+				<input type="text" placeholder="请输入设备名称" / style="width: 90%;margin: .3rem 5% .2rem 5%;" class="p10  bb-e5 new_name f16" maxlength="22">
+				<input type="button" name="" id="payment_sub" value="确认" class="f15" />
+			</div>
+		</section>
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js?-6"></script>
+		<script>
+			var order_id;
+			var device_id;
+			var macno;
+			$(function() {
+				var token = user_token();
+				var url = dlcUrl();
+
+				function click() {
+					$('.masks').click(function() {
+						$('.masks').hide();
+						$('.elastic').hide();
+					})
+
+					$('.edit').click(function() {
+						$('.masks').show();
+						$('.elastic').show();
+						device_id = $(this).data('id');
+					});
+					$('#payment_sub').on('click', function() {
+						var device_name = $('.new_name').val();
+						console.log(device_name);
+						load();
+						the_custom(device_id, device_name);
+					})
+				}
+
+				function ajax_list() {
+					load();
+					var obj = {
+						"HTTP_API": "vv/device/api/index/usedDeviceLog",
+						"token": token
+					}
+					var html = "";
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						var data = data.data;
+						if(code == 1) {
+							for(i in data) {
+								var device_id = data[i].device_id; //设备ID
+								var title = data[i].title; //设备名称
+								macno = data[i].macno; //设备编号
+								var ctime = data[i].ctime; //时间
+								order_id = data[i].oid;
+								ctime = getdates(ctime * 1000);
+								var status = data[i].status; //使用状态 1代表在使用
+								if(status == 1) {
+									status = `<span class="plr20 ptb4 cf br15-b-lr br15-l-tb" style="margin-right: -.2rem;background: #F9B552;" onclick="jump_now(${device_id})">正在使用中</span>`
+								} else {
+									status = `<span class="plr20 ptb4 cf br15-b-lr br15-l-tb" style="margin-right: -.2rem;background: #89C997;" onclick="jump_go(${device_id})">去使用</span>`
+								}
+								html += `<li class="ptb10 bg-ff plr10 mb6">
+											<p class="ptb4">
+												<span class="c9 pr10">设备编号</span>
+												<span>${macno}</span>
+											</p>
+											<p class="ptb4">
+												<span class="c9 pr10">设备名称</span>
+												<span class="device_name">${title}</span>
+												<span class="edit" data-id="${device_id}"></span>
+											</p>
+											<p class="ptb4">
+												<span class="c9 f12">${ctime}</span>
+											</p>
+											<p class="ptb4 ta-right">
+												${status}
+											</p>
+										</li>`
+
+							}
+
+						} else if(code == 0) {
+							html += `<li class="bg-ff br3 p-r mb10">
+										<p class="c9 ptb10 ta-center">没有更多数据<p/>
+									</li>`
+						} else {
+							_alert(data);
+						}
+						$('.device_content').html(html);
+						click();
+						remove_load();
+					}, 'json')
+				};
+				ajax_list();
+				//自定义设备名称
+				function the_custom(device_id, device_name) {
+					var obj = {
+						"HTTP_API": "vv/device/api/index/editDeviceName",
+						"token": token,
+						"device_id": device_id,
+						"device_name": device_name
+					}
+					$.post(url, obj, function(data) {
+						console.log(data);
+						var code = data.code;
+						remove_load();
+						$('.masks').hide();
+						$('.elastic').hide();
+						if(code == 1) {
+							ajax_list();
+						} else {
+							_alert("修改失败")
+						}
+					}, 'json')
+				}
+			});
+
+			function jump_now(device_id) {
+				location.href = "Add_device.html?order_id=" + order_id + "&macno=" + macno;
+			}
+
+			function jump_go() {
+				location.href = "payment.html?macno=" + macno;
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css?-2" />
+		<title>共享护理床</title>
+	</head>
+	<style type="text/css">
+		.swiper-pagination {
+			text-align: right;
+		}
+		
+		.swiper-pagination-bullet-active {
+			background: #000;
+		}
+		
+		body {
+			padding: .1rem;
+		}
+		
+		.tc_list {
+			position: relative;
+		}
+		
+		.tc_list:after {
+			position: absolute;
+			content: "设备启动检查中...";
+			width: 100%;
+			height: 100%;
+			background: #fff;
+			color: #7ECEF4;
+			left: 0;
+			top: 0;
+		}
+		
+		.hide:after {
+			display: none;
+		}
+		
+		.chongfu:after {
+			content: "重复交易流水";
+		}
+		
+		.sbm:after {
+			content: "设备忙";
+		}
+		
+		.sbgz:after {
+			content: "设备故障";
+		}
+		
+		.wgm:after {
+			content: "未购买";
+		}
+	</style>
+
+	<body>
+		<section>
+			<!--顶部轮播-->
+			<div class="swiper-container device_content">
+				<ul class="swiper-wrapper banner">
+					<!--<li class="swiper-slide">
+						<a href="https://www.baidu.com">
+							<img src="../img/timg (5).jpg" />
+						</a>
+					</li>
+					<li class="swiper-slide">
+						<a href="https://www.baidu.com">
+							<img src="../img/timg (6).jpg" />
+						</a>
+					</li>-->
+				</ul>
+				<div class="swiper-pagination"></div>
+			</div>
+			<div class="mt10 coun_down p20">
+				<div>
+					<span class="mac">设备编号：--</span>
+					<span class="right cf f12 br3" style="background: #7ECEF4;padding: .03rem .1rem;" onclick="proposal()">故障反馈</span>
+				</div>
+				<ul class="tc_content">
+					<li class="ta-center">
+						<p class="f13 c6 mt20 mb10">--</p>
+						<span class="coun_size fw-bold f18 br5 tc_list">--:--:--</span>
+					</li>
+					<li class="ta-center">
+						<p class="f13 c6 mt20 mb10">--</p>
+						<span class="coun_size fw-bold f18 br5 tc_list">--:--:--</span>
+					</li>
+					<li class="ta-center">
+						<p class="f13 c6 mt20 mb10">--</p>
+						<span class="coun_size fw-bold f18 br5 tc_list">--:--:--</span>
+					</li>
+
+				</ul>
+				<div class="ta-center mt10 mb20">
+					<a class="ptb30 font14 col9" id="mobile"></a>
+				</div>
+				<!--<input type="button" name="" id="payment_sub" value="添加到设备列表" class="f15" onclick="add()" />-->
+				<div class="mask" style="display: none;"></div>
+				<div class="mask_parent" style="display: none;">
+					<span class="mask_pic mb10 mt15"></span>
+					<span class="cf">添加成功</span>
+				</div>
+			</div>
+		</section>
+
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js"></script>
+		<script>
+			var order_id = getQueryString("order_id"); //订单ID
+			var macno = getQueryString("macno"); //设备id
+			$('.mac').html('设备编号：' + macno);
+			$(function() {
+				var token = user_token();
+				//token="0105c70f-b469-4d91-a4e2-b3ad53a1ed30";
+				var url = dlcUrl();
+				//order_id=681;
+				//轮播图
+				$.post(url, {
+					"HTTP_API": "vv/advert/api/index/getAdvertByKey",
+					"keyname": "banner",
+					"returntype": "json"
+				}, function(data) {
+					var code = data.code;
+					var html = "";
+					if(code == 1) {
+						var data = data.data;
+						for(i in data) {
+							var pic = data[i].value; //图片地址
+							var link_ = data[i].link; //跳转地址
+							html += `<li class="swiper-slide">
+										<a href="${link_}">
+											<img src="${pic}" />
+										</a>
+									</li>`
+						}
+					}
+					$('.banner').html(html);
+					//轮播广告
+					var mySwiper = $('.device_content').swiper({
+						pagination: '.swiper-pagination',
+						paginationClickable: true,
+						autoplay: 3000,
+						speed: 500,
+						loop: true,
+					});
+				}, 'json');
+				//添加弹出框
+				//			function add() {
+				//				var time;
+				//				clearTimeout(time);
+				//				$('.mask').show();
+				//				$('.mask_parent').show();
+				//				time = setTimeout(function() {
+				//					$('.mask').hide();
+				//					$('.mask_parent').hide();
+				//				}, 1500)
+				//			}
+				//倒计时
+				function FreshTime(times) {
+					//times是结束时间
+					//element是要倒计时结束是需要显示的内容
+					var endtime = new Date(times); //结束时间
+					var nowtime = new Date(); //当前时间
+					var lefttime = parseInt((endtime.getTime() - nowtime.getTime()) / 1000); // 剩余时间
+					var timesHTML;
+					if(lefttime <= 0) {
+						timesHTML = "00:00:00";
+					} else if(lefttime > 0) {
+						d = parseInt(lefttime / 3600 / 24); // 剩余天数
+						h = parseInt((lefttime / 3600)); // 剩余小时数
+						m = parseInt((lefttime / 60) % 60); // 剩余分钟数
+						s = parseInt(lefttime % 60); // 剩余秒数
+						if(d < 10) {
+							d = "0" + d;
+						}
+						if(h < 10) {
+							h = "0" + h;
+						}
+						if(m < 10) {
+							m = "0" + m;
+						}
+						if(s < 10) {
+							s = "0" + s;
+						}
+						timesHTML = h + ":" + m + ":" + s;
+					}
+					return timesHTML;
+				}
+				//查询设备情况
+				function check(taocanid) {
+					var status = "";
+					var obj = {
+						"HTTP_API": "vv/device/api/index/checkDeviceStatus",
+						"token": token,
+						"taocanid": taocanid,
+						"oid": order_id
+					}
+					$.ajaxSettings.async = false;
+					$.post(url, obj, function(data) {
+						//console.log(data);
+						var code = data.code;
+						if(code == 1) {
+							status = data.data.status; //-1查询中，0交易成功，1重复交易流水，2设备忙，3设备故障，4未购买
+						} else {
+							_alert("设备状态查询异常")
+						}
+					}, 'json');
+					$.ajaxSettings.async = true;
+					return status;
+				}
+				//操作dom倒计时函数
+				function times() {
+					$('.tc_content li').each(function() {
+						var dom_val = $(this).children().children("span"); //时间元素
+						var t_val = dom_val.data('m'); //时间元素值
+						var oid = dom_val.data('oid'); //子订单ID
+						var money = dom_val.data('price'); //子订单价格
+						var t_id = $(this).data('id'); //套餐ID
+						if(!!t_val) {
+							var dd = setInterval(function() {
+								var cc = FreshTime(t_val);
+								dom_val.html(cc);
+								if(cc === "00:00:00") {
+									console.log(1);
+									clearInterval(dd);
+									order_details();
+								}
+							}, 1000); // 每秒钟执行一次
+							var status = check(t_id); //-1查询中，0交易成功，1重复交易流水，2设备忙，3设备故障，4未购买
+							if(status == "-1") {
+								//查询中
+							} else if(status == "0") {
+								dom_val.addClass("hide");
+							} else if(status == "1") {
+								dom_val.addClass("chongfu");
+							} else if(status == "2") {
+								dom_val.addClass("sbm");
+							} else if(status == "3") {
+								dom_val.addClass("sbgz");
+								load("设备故障，退款中...");
+								refund(money, order_id, t_id)
+							}
+						}
+					})
+					remove_load();
+				}
+				//套餐 
+				(function package() {
+					load();
+					var obj = {
+						"HTTP_API": "vv/taocan/api/index/allTaocan",
+						"token": token,
+						"macno": macno
+					}
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						var html = "";
+						if(code == 1 || code == 2 || code == 0) {
+							var res = data.data.list;
+							for(i in res) {
+								var id = res[i].id; //套餐ID
+								var title = res[i].title; //套餐名称
+								var keep_minutes = res[i].keep_minutes; //套餐时间：分钟
+								var price = returnFloat(res[i].price); //价格
+								var classid = "class" + id; //自定义 classid
+								html += `<li class="ta-center ${classid}" data-id="${id}">
+											<p class="f13 c6 mt20 mb10">${title}套餐余量</p>
+											<div class="coun_size ta-center bg-f5 br5" style="border: none;">
+												<span class="c6 f16">${keep_minutes}分钟/${price}元</span>
+												<span class="right cf mr15 mt10 br3" style="background: #7ECEF4;height: .3rem;line-height: .3rem;width: .8rem;" onclick="jump_go()">购买使用</span>
+											</div>
+										</li>`
+							}
+						}
+						$('.tc_content').html(html);
+						order_details();
+					}, 'json');
+				}());
+				//订单详情函数
+				function order_details() {
+					var obj = {
+						"HTTP_API": "vv/order/api/index/details",
+						"o_id": order_id, //订单号
+						"token": token
+					}
+					var html = "";
+					var htmls = "";
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						if(code == 1) {
+							var data = data.data.goods_list;
+							//console.log(data);
+							for(i in data) {
+								num = data[i].num; //设备号
+								var id = data[i].taocanid; //套餐ID
+								var goods_attr = data[i].goods_attr; //套餐名称
+								var to_time = (data[i].to_time) * 1000; //结束时间
+								var price = returnFloat(data[i].goods_info.price); //套餐价格
+								var keep_minutes = data[i].goods_info.keep_minutes; //套餐时间
+								var oid = data[i].id; //子订单ID
+								//根据时间判断
+								var endtime = new Date(to_time); //结束时间
+								var nowtime = new Date(); //当前时间
+								var lefttime = parseInt((endtime.getTime() - nowtime.getTime()) / 1000) // 剩余时间
+								console.log(endtime.getTime());
+								console.log(nowtime.getTime());
+								var classid = "class" + id; //自定义classid
+								html = `<p class="f13 c6 mt20 mb10">${goods_attr}余量</p>
+										<div>
+											<span class="coun_size fw-bold f18 br5 times" id="${id}" data-m="" data-oid="${oid}" data-price="${price}">--:--:--</span>
+										</div>`
+								htmls = `<p class="f13 c6 mt20 mb10">${goods_attr}套餐余量</p>
+										<div class="coun_size ta-center bg-f5 br5" style="border: none;">
+											<span class="c6 f16">${keep_minutes}分钟/${price}元</span>
+											<span class="right cf mr15 mt10 br3" style="background: #7ECEF4;height: .3rem;line-height: .3rem;width: .8rem;" onclick="jump_go()">购买使用</span>
+										</div>`
+								if(lefttime <= 0) {
+									$(".class" + id).html(htmls);
+								} else {
+									$(".class" + id).html(html);
+								}
+								$('#' + id).attr('data-m', to_time); //给套餐复制分钟
+							}
+							times();
+						}
+					}, 'json');
+				}
+				//退款
+				function refund(money, oid, taocanid) {
+					var obj = {
+						"HTTP_API": "vv/money/api/index/tuikuan",
+						"token": token,
+						"money": money,
+						"oid": order_id,
+						"taocanid": taocanid
+					}
+					$.post(url, obj, function(data) {
+						console.log(data);
+						var code = data.code;
+						if(code == 0) {
+							_alert("退款失败");
+						} else if(code == 1) {
+							_alert("退款成功")
+						} else if(code == 2) {
+							_alert("退款失败，已退款");
+						}
+						remove_load();
+					}, 'json')
+				}
+			});
+			//跳转函数
+			function proposal() {
+				location.href = "proposal.html?macno=" + macno;
+			}
+
+			function jump_go() {
+				location.href = "payment.html?order_id=" + order_id + "&macno=" + macno;
+			}
+		</script>
+	</body>
+
+</html>

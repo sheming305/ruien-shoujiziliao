@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2"></script>
+    <title></title>
+</head>
+<body style='margin:50px 10px;'>
+    <div id="status" style="text-align: center"></div>
+    <div style="width:300px;height:200px;border:1px solid gray;margin:30px auto" id="container"></div>
+</body>
+<script type="text/javascript">
+    window.onload= function () {
+        if(navigator.geolocation) {
+            document.getElementById("status").innerHTML = "";
+            navigator.geolocation.getCurrentPosition(updateLocation);
+        }
+        };
+
+
+    function updateLocation(position) {
+
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        if(!latitude || !longitude) {
+
+            document.getElementById("status").innerHTML = "HTML5Geolocation is supported in your browser, but location is currently not available.";
+                    return;
+        }
+        var map = new BMap.Map("container");
+        var point = new BMap.Point(longitude, latitude);
+        map.centerAndZoom(point, 15);
+        var marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+
+
+
+    }
+</script>
+</html>

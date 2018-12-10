@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+
+        .active{
+            background: #269abc;
+
+        }
+        .nav .header ul{
+            list-style: none;
+            padding:0;
+            margin:0 0 0 20px;
+
+        }
+
+        .nav .header ul li>a{
+            text-decoration: none;
+            font-size: 15px;
+            color:#fff;
+            font-weight: bold;
+        }
+        .header ul>li{
+           float: left;
+            width:120px;
+            height:65px;
+            line-height: 65px;
+            text-align: center;
+            margin-left:3px;
+
+        }
+        .shouye,.chanpin,.dianhua{
+            position:relative;
+        }
+        #text01,#text02{
+            position: absolute;
+            text-align: left;
+            padding:0 10px;
+            margin:0;
+            width:600px;
+            height:300px;
+            left:40%;
+            background: #666666;
+            z-index: 1000;
+            display: none;
+        }
+        #text03{
+            position: absolute;
+            margin:0;
+            width:200px;
+            height:50px;
+            line-height: 50px;;
+            left:40%;
+            background: #666666;
+            color:#fff;
+            z-index: 1000;
+            display: none;
+        }
+        .nav li:hover a{
+            color:#fff;
+        }
+
+
+
+        .header{
+            background: #202124;
+
+        }
+
+        .nav,.header,ul:after{
+            content:"";
+            display: block;
+            clear:both;
+        }
+        img {
+            border: 0;
+            vertical-align: middle;
+            margin-top:-8px;
+        }
+        .header{
+            width:100%;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="nav">
+    <div class="header">
+        <ul>
+            <li style="margin-right:15px;">
+                <a href=""><img src="images/logo.png" alt=""/></a>
+            </li>
+            <li class="shouye rt">
+                <a href="">首页</a>
+                <div id="text01">
+                    <p>
+                        <a href="">111111111</a>
+                        <a href="">111111111</a>
+                        <a href="">111111111</a>
+                    </p>
+                    <p>
+                        <a href="">111111111</a>
+                        <a href="">111111111</a>
+                        <a href="">111111111</a>
+                    </p>
+                    <p>
+                        <a href="">111111111</a>
+                        <a href="">111111111</a>
+                        <a href="">111111111</a>
+                    </p>
+                </div>
+            </li>
+            <li class="chanpin rt">
+                <a href="">产品</a>
+                <div id="text02">
+                    <p>444444444441</p>
+                    <p>55555555555</p>
+                    <p>66666666666</p>
+                </div>
+            </li>
+            <li class="rt">
+                <a href="">接入指南</a>
+            </li>
+            <li class="rt">
+                <a href="">瑞恩应用</a>
+            </li>
+            <li class="rt">
+                <a href="">客户案例</a>
+            </li>
+            <li class="rt">
+                <a href="">登录</a>
+            </li>
+            <li class="rt">
+                <a href="">注册</a>
+            </li>
+            <li class="dianhua rt">
+                <a href="">电话</a>
+                <div id="text03">
+                    400-552-233
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<script src="js/jquery.min.js"></script>
+<script>
+$(function () {
+    $(".shouye").hover(function (){
+        $("#text01").show(300);
+    },function (){
+        $("#text01").hide(100);
+    });
+
+    $(".chanpin").hover(function (){
+        $("#text02").show(300);
+    },function (){
+        $("#text02").hide(100);
+    });
+
+    $(".dianhua").hover(function (){
+        $("#text03").fadeIn(300);
+    },function (){
+        $("#text03").fadeOut(100);
+    });
+})
+</script>
+<script>
+   $(document).ready(function(){
+        $("ul li.rt").each(function(){
+           $(this).click(function(){
+               $("ul li.rt").removeClass("active");
+                $(this).addClass("active");
+                return false;//防止页面跳转
+           });
+        });
+   });
+
+//$(function(){
+//    $("ul li").click(function(){
+//        $(this).addClass("active").siblings().removeClass("active");
+//    });
+//});
+
+
+
+</script>
+</body>
+</html>

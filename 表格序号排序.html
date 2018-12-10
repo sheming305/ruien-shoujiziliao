@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+    <!-- 以下是删除一行后表格序号自动排序，表格清空后点击添加一行按钮又自动从1开始排序 -->
+    <script type="text/javascript">
+         $("#mytable").find("tr").each(function(i){
+            $(this).find("td").eq(0).text(i-1);
+        });
+    </script>
+</body>
+</html>

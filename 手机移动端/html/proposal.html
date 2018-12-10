@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>故障反馈</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/common.css" />
+		<link rel="stylesheet" href="../css/main.css" />
+		<style type="text/css">
+			.confirm {
+				margin-top: 0.8rem;
+				width: 86%;
+				margin: 1.226rem 7% 0 7%;
+				height: 1rem;
+				line-height: 1rem;
+				text-align: center;
+				text-align: -webkit-center;
+				text-align: -moz-center;
+				color: #fff;
+				border-radius: .1rem;
+				background: #7ECEF4;
+				letter-spacing: 2px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="ptb30 tac" style="margin: .3rem .3rem .2rem .3rem;background: #fff;border-radius: .1rem;">
+			<span class="col9 font12 mr10 mac_title">设备编码</span>
+			<input class="mac tac font12" style="display: inline-block;" placeholder="请输入设备编码" onkeyup="this.value=this.value.replace(/\D/g,'')"></input>
+		</div>
+		<form action="" enctype="multipart/form-data" method="post" name="form" id="form" onsubmit="return formSubmit()">
+			<div class="comment_cont">
+				<div class="comements mlr30 20 border-r1 plr20 pb20 bw">
+					<div class="comment-photo pt40">
+						<div class="dib" id="pic_box">
+							<label>
+                        <input type="file" hidden="hidden" name="img"  class="imgs" onchange="upLoadImg(this,'pic_box',6)"/>
+                    </label>
+						</div>
+					</div>
+					<div class="tac col9 font14 mt20">上传图片(最多6张)</div>
+				</div>
+				<div class="bw mlr30 border-r1 flex_aj ptb20 plr24 contentBox mt20">
+					<div class="hh100 pt10 mr20"><img src="../img/icon0.png" alt="" style="width: .3rem;"></div>
+					<textarea id="content" placeholder="请留下您的建议和意见吧！" class="content font15 col9" maxlength="140"></textarea>
+				</div>
+			</div>
+			<div class="confirm">提交</div>
+		</form>
+		<div class="tac ptb30">
+			<a class="ptb30 font14 col9" id="mobile" style="display: block;"></a>
+		</div>
+	</body>
+
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script type="text/javascript">
+	var onOff = 0;
+	var arr = [];
+	var macno = getQueryString("macno"); //订单ID
+	if(!!macno) {
+		$('.mac').val(macno);
+		$('.mac').prop("readonly",true);
+	} else {
+		$('.mac_title').hide();
+	}
+	var token = user_token();
+	$(function() {
+		$.post(dlcUrl(), {
+			"HTTP_API": "vv/companyinfo/api/index/getInfo"
+		}, function(res) {
+			if(res.code == 1) {
+				$('#mobile').attr('href', 'tel:' + res.data.company_service);
+				$('#mobile').text('客服电话 :' + res.data.company_service);
+			} else {
+				console.log(res.msg);
+			}
+		}, 'json')
+		$('.confirm').click(function() {
+			macno = $('.mac').val();
+			var content = $('#content').val();
+			console.log(arr);
+			if(isNull(content)) {
+				dlctipbox.show('请输入您的建议和意见！');
+				return false;
+			} else {
+				if(onOff) return false;
+				onOff = 1;
+				dlctipbox.loading('提交中');
+				$.post(dlcUrl(), {
+					"HTTP_API": 'vv/repairs/api/index/submitrepairs',
+					"token": token,
+					"content": content,
+					"macno": macno,
+					"pic": String(arr)
+				}, function(res) {
+					dlctipbox.clear();
+					console.log(res);
+					if(res.code == 1) {
+						dlctipbox.alert('提交成功', function(flag) {
+							if(flag == 1) {
+								history.go(-1);
+							}
+						});
+					} else {
+						onOff = 0;
+						dlctipbox.alert(res.msg);
+					}
+				}, 'json')
+			}
+		});
+	});
+
+	function formSubmit() {
+		var img_address = $('.imgs').val();
+		var data = {
+			HTTP_API: 'api/common/upload',
+			upload: img_address
+		};
+		$('#form').ajaxSubmit({
+			data: data,
+			url: dlcUrl(),
+			type: 'POST',
+			dataType: 'json',
+			beforeSubmit: function() {
+				if($('.isImg').length == 0) {
+					dlctipbox.show('请选择图片');
+					return false;
+				} else {
+					dlctipbox.loading('提交中');
+				}
+			},
+			success: function(res) {
+				dlctipbox.clear();
+				console.log(res);
+				if(res.code == 1) {
+					arr.push(res.data.url); //返回的图片id
+				} else {
+					dlctipbox.show(res.msg);
+				}
+			},
+			error: function(err) {
+				dlctipbox.clear();
+			}
+		});
+		return false; //阻止表单默认提交
+	}
+	//删除图片
+	$('#pic_box').on('click', '.removeBtn', function() {
+		var index = $(this).parents('label').index();
+		console.log(index);
+		arr.splice(index, 1);
+		console.log(arr);
+		$(this).parents('label').remove();
+	})
+</script>

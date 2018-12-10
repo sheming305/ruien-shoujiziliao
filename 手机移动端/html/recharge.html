@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>充值</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<!--<link rel="stylesheet" type="text/css" href="../css/common.css" />-->
+		<link rel="stylesheet" type="text/css" href="../css/base.css?113"/>
+		<link rel="stylesheet" href="../css/szplstylkj.css" />
+	</head>
+	<style type="text/css">
+		.t {
+			padding: 4% 3%;
+			font-weight: 600;
+		}
+		
+		ul {
+			width: 100%;
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: space-around;
+			align-items: center;
+		}
+		
+		label {
+			width: 40%;
+			height: .5rem;
+			text-align: center;
+			margin-bottom: 3%;
+		}
+		
+		label span {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			align-items: center;
+			border-radius: 5px;
+			border: 1px solid #7ECEF3;
+			color: #000;
+			font-weight: 600;
+			font-size: .16rem;
+		}
+		
+		input[type=radio]:checked+span {
+			background: #7ECEF3;
+			color: #fff;
+			border: 1px solid #7ECEF3;
+		}
+		
+		button {
+			display: block;
+			margin: 10% auto 0;
+			width: 95%;
+			padding: 4% 0;
+			border-radius: .1rem;
+			background: #7ECEF3;
+			color: #fff;
+			border: none;
+			outline: none;
+		}
+		
+		.other {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			align-items: center;
+			border-radius: 5px;
+			border: 1px solid #7ECEF3;
+			color: #000;
+			font-weight: 600;
+			text-align: center;
+		}
+	</style>
+
+	<body>
+		<p class="t font15">充值套餐</p>
+		<ul class="package">
+			<!--<label>
+				<input type="radio" name="money"  value="100" hidden  checked="checked"/>
+				<span>￥100</span>
+			</label>
+			<label>
+				<input type="radio" name="money"  value="200"  hidden />
+				<span>￥200</span>
+			</label>
+			<label>
+				<input type="radio" name="money"  value="1000"  hidden />
+				<span>￥1000</span>
+			</label>-->
+			<label>
+				<input class="other f16" type="text" name="money"  value="" maxlength="6" style="width: 100%;height: 100%;box-shadow: none;" placeholder="其他" oninput="this.value = this.value.replace(/^0|\D/g,'')"/>
+			</label>
+		</ul>
+		<input type="button" name="" id="payment_sub" value="立即支付" class="f16" style="height: .5rem;margin-top: .35rem;" />
+
+</html>
+<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/dlc.js?0" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	$(function() {
+		var token = user_token(); //token值
+		var url = dlcUrl(); //接口地址
+		var jsApiParameters = {}; //支付参数
+		var openid = user_openid();
+		var off = true; //支付开关
+		//切换套餐
+		$(".other").focus(function() {
+			$('ul input[name="money"]:checked').prop("checked", false);
+		});
+		//充值套餐接口
+		(function package() {
+			load();
+			var obj = {
+				"HTTP_API": "vv/money/api/index/rechargePackage",
+				"token": token
+			}
+			$.post(url, obj, function(data) {
+				var code = data.code;
+				var html = "";
+				var data = data.data;
+				if(code == 1) {
+					for(i in data) {
+						var tcid = data[i].taocanId;
+						var chongMoney = data[i].chongMoney
+						html += `<label>
+								<input type="radio" name="money"  value="${chongMoney}"  hidden data-id="${tcid}"/>
+								<span>￥${chongMoney}</span>
+							</label>`
+					}
+				}
+				$('.package').prepend(html);
+				remove_load();
+				click();
+			}, 'json')
+		}());
+		//点击支付按钮函数
+		function click() {
+			$('#payment_sub').on('click', function() {
+				var other_val = $('.other').val();
+				var taocan_id = "";
+				var money = "";
+				if(!!other_val) {
+					money = other_val;
+				} else {
+					money = $('ul input[name="money"]:checked').val();
+					taocan_id = $('ul input[name="money"]:checked').data('id');
+				}
+				if(other_val == "0" || !other_val && money == undefined) {
+					console.log("弹出不能操作菜单")
+				} else {
+					var off = false; //支付开关
+					load();
+					top_up(money, taocan_id);
+					console.log(money);
+				}
+			});
+		}
+		//充值函数
+		function top_up(money, taocan_id) {
+			var obj = {
+				"HTTP_API": "vv/money/api/index/chongzhi",
+				"token": token,
+				"taocan_id": taocan_id,
+				"money": money,
+			}
+			$.post(url, obj, function(data) {
+				var code = data.code;
+				if(code == 1) {
+					var paylog = data.data.paylog; //订单号
+					wx_pay(paylog, money);
+				}
+			}, 'json')
+		}
+		//微信支付返回数据
+		function wx_pay(paylog, money) {
+			var obj = {
+				"HTTP_API": "vv/weixinpay/api/index/pay",
+				"openid": openid,
+				"money": money, //支付金额
+				"trade_no": paylog, //订单号
+				"trade_type": "JSAPI",
+				"token": token
+			}
+			$.post(url, obj, function(data) {
+				console.log(data);
+				var code = data.code;
+				if(code == 1) {
+					jsApiParameters = data.data;
+					remove_load();
+					callpay();
+				}
+			}, "json")
+		}
+		//调用微信JS api 支付
+		function jsApiCall() {
+			WeixinJSBridge.invoke(
+				'getBrandWCPayRequest',
+				jsApiParameters, // 提交的支付信息
+				function(res) {
+					WeixinJSBridge.log(res.err_msg);
+					// alert(JSON.stringify(res));
+					off = true;
+					if(res.err_msg == 'get_brand_wcpay_request:ok') {
+						history.go(-1);
+					} else {
+						off = true;
+						//dlctipbox.alert("取消支付")
+						_alert("取消支付");
+					}
+				}
+			);
+		}
+		//调用微信 支付
+		function callpay() {
+			if(typeof WeixinJSBridge == "undefined") {
+				if(document.addEventListener) {
+					document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+
+				} else if(document.attachEvent) {
+					document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+					document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+				}
+			} else {
+				jsApiCall();
+			}
+		}
+	})
+</script>

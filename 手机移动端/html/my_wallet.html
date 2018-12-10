@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css" />
+		<title>共享护理床</title>
+	</head>
+
+	<body>
+		<section>
+			<div class="m15 bg-ff ta-center pt15 br3" style="height: 1.5rem;">
+				<p class="c9 f14">余额（元）</p>
+				<p class="mt10 f22 fw-bold balance" style="color: #7ECEF3;">--</p>
+				<p class=" ptb4 plr20 cf br20 mt15 f14 money_btn pl30" onclick="jump()">充值</p>
+			</div>
+			<p class="pl15 c9 f15">钱包明细</p>
+			<ul class="p15 balance_details">
+				<!--<li class="bg-ff br3 p-r mb10">
+					<p class="f15 plr10 pt10">微信充值</p>
+					<p class="f12 plr10 pb10 pt2 c9">2018.9.30 10:00</p>
+					<span class="p-a money_dt f16" style="color: #3BCCC9;">+10</span>
+				</li>
+				<li class="bg-ff br3 p-r">
+					<p class="f15 plr10 pt10">使用护理床</p>
+					<p class="f12 plr10 pb10 pt2 c9">2018.9.30 10:00</p>
+					<span class="p-a money_dt f16" style="color: #EF1933;">-10</span>
+				</li>-->
+			</ul>
+		</section>
+
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js?118"></script>
+		<script>
+			$(function() {
+				var token = user_token();
+				var url = dlcUrl();
+				var page = 1; //页码数
+				var loading = true;
+				//获取余额
+				(function balance() {
+					//加载动画
+					load();
+					var obj = {
+						"HTTP_API": "vv/usercenter/api/user/myWallet",
+						"token": token
+					}
+					$.post(url, obj, function(data) {
+						//						remove_load();
+						//console.log(data);
+						var code = data.code;
+						if(code == 1) {
+							var uMoney = Number(data.data.uMoney);
+							var umoneygift = Number(data.data.umoneygift);
+							uMoney = uMoney + umoneygift;
+							uMoney=returnFloat(uMoney)
+							$('.balance').html(uMoney);
+						}
+					}, 'json')
+				}());
+				//资金明细
+				function balance_details() {
+					//加载动画
+					load();
+					var html = "";
+					var obj = {
+						"HTTP_API": "vv/money/api/index/transaction",
+						"token": token,
+						//"type": "", //消费充值类型
+						"page": page, //页码
+						"pagesize": 10 //默认多少条
+					}
+					$.post(url, obj, function(data) {
+						var code = data.code;
+						console.log(data);
+						var res = data.data.list;
+						console.log(res)
+						if(page == 1 && res.length == 0) {
+							html = `<li class="bg-ff br3 p-r mb10">
+										<p class="c9 ptb30 ta-center">暂无明细<p/>
+									</li>`
+						} else {
+							for(i in res) {
+								var fuhao = res[i].fuhao; //资金正负
+								var operate_type = res[i].operate_type; //100充值余额  105：充值押金 108：退押金  200：提现  210：拒绝提现 返还资金
+								var money = res[i].money; //金额
+								var ctime = getdate(res[i].ctime * 1000); //时间
+								if(operate_type == 100) {
+									operate_type = "充值余额"
+								} else if(operate_type == 105) {
+									operate_type = "充值押金"
+								} else if(operate_type == 108) {
+									operate_type = "退押金"
+								} else if(operate_type == 200) {
+									operate_type = "提现"
+								} else if(operate_type == 210) {
+									operate_type = "拒绝提现，返还资金"
+								} else if(operate_type == 140) {
+									operate_type = "支付"
+								} else if(operate_type == 120) {
+									operate_type = "充值赠送"
+								} else if(operate_type == 180) {
+									operate_type = "收入"
+								} else if(operate_type == 666) {
+									operate_type = "管理员手动充值"
+								} else if(operate_type == 250) {
+									operate_type = "预付款订单返回剩余未消费资金"
+								} else if(operate_type == 777) {
+									operate_type = "订单退款"
+								}
+								if(fuhao == "-") {
+									fuhao = `<span class="p-a money_dt f16" style="color: #EF1933;">-${money}</span>`
+								} else {
+									fuhao = `<span class="p-a money_dt f16" style="color: #3BCCC9;">+${money}</span>`
+								}
+								html += `<li class="bg-ff br3 p-r mb10">
+										<p class="f15 plr10 pt10">${operate_type}</p>
+										<p class="f12 plr10 pb10 pt2 c9">${ctime}</p>
+										${fuhao}
+									</li>`
+							}
+							loading = true;
+						}
+						if(page != 1 && res.length < 10) {
+							loading = false;
+							html += `<li class="bg-ff br3 p-r mb10">
+										<p class="c9 ptb10 ta-center">没有更多数据<p/>
+									</li>`
+						}
+						$('.balance_details').append(html);
+						remove_load();
+					}, 'json')
+				}
+				balance_details();
+				//滚动加载
+				$(window).scroll(function() {
+					if($(document).scrollTop() == 0) {
+						return;
+					} else if($(document).scrollTop() >= $(document).height() - $(window).height() - 10) {
+						if(loading == true) {
+							loading = false;
+							setTimeout(function() {
+								page++;
+								balance_details();
+							}, 17);
+						}
+					}
+				});
+			})
+
+			function jump() {
+				location.href = "recharge.html"
+			}
+		</script>
+	</body>
+
+</html>

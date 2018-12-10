@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css" />
+		<title>关于我们</title>
+	</head>
+
+	<body>
+		<section>
+			<div class="ta-center" style="height: 2.4rem;">
+				<span class="mt40 about_pic">
+					<img src="" alt="" style="vertical-align: middle;"/>
+				</span>
+				<p class="c6 f20 mt25 company_name">--</p>
+			</div>
+			<p class="p10 bg-ff" style="border-top:1px solid #F2F2F2 ;border-bottom:1px solid #F2F2F2 ;">
+				<span>当前版本</span>
+				<span class="right">网页版</span>
+			</p>
+			<p>
+				<a href="tel:" style="display: block; height: 100%;border-bottom:1px solid #F2F2F2 ;"  class="p10 bg-ff phone">
+					<span>客服电话</span>
+					<span class="right phone_num" style="color: #607DCB;">--</span>
+				</a>
+			</p>
+			<!--<div class="p-fixed ta-center" style="bottom: .3rem;width: 100%;">
+				<p class="c9 f12">--</p>
+				<p class="c9 f12 app_name">--</p>
+			</div>-->
+		</section>
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js"></script>
+		<script>
+			$(function(){
+				var token = user_token();
+				var url = dlcUrl();
+				var obj={
+					"HTTP_API":"vv/companyinfo/api/index/getInfo"
+				}
+				$.post(url,obj,function(data){
+					var code=data.code;
+					var data=data.data;
+					if(code==1){
+						var company_name=data.company_name;//公司名称
+						var company_logo=data.company_logo;//logo
+						var company_service=data.company_service;//电话
+						var app_name=data.app_name;//项目标题，大字体
+						$('.company_name').html(company_name);
+						$('.app_name').html(app_name);
+						$('.phone').attr('href','tel:'+company_service);
+						$('.phone_num').html(company_service);
+						if(!!company_logo){
+							$('.about_pic img').attr('src',company_logo);
+						}else{
+							$('.about_pic img').attr('src',"../img/QQ截图20181018152201.png");
+						}
+						
+						
+					}
+					console.log(data);
+				},'json')
+			})
+		</script>
+	</body>
+
+</html>

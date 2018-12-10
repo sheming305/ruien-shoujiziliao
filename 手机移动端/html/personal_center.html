@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../css/swiper-min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/base.css" />
+		<link rel="stylesheet" type="text/css" href="../css/szplstylkj.css" />
+		<title>个人中心</title>
+	</head>
+	<style type="text/css">
+		body {
+			background: #fff;
+		}
+	</style>
+
+	<body>
+		<section>
+			<div>
+				<div class="ta-center bg-ff pt20" style="height: .95rem;">
+					<span class="personal_pic">
+						<img src="" alt="" class="avatar"/>
+					</span>
+				</div>
+				<div class="ta-center bg-ff">
+					<p class="fw-bold nicname">--</p>
+					<!--<p class="f12 ptb4 c9 mobile">--</p>-->
+				</div>
+				<ul class="p18 bg-ff">
+					<li class="personal_li sblb">
+						<a href="device_list.html" class="ptb15">设备列表</a>
+					</li>
+					<li class="personal_li wdqb">
+						<a href="my_wallet.html" class="ptb15">我的钱包</a>
+					</li>
+					<li class="personal_li syjl">
+						<a href="use_records.html" class="ptb15">使用记录</a>
+					</li>
+					<li class="personal_li gzfk">
+						<a href="proposal.html" class="ptb15">故障反馈</a>
+					</li>
+					<li class="personal_li gywm">
+						<a href="about_us.html" class="ptb15">关于我们</a>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/swiper-3.4.1.min.js"></script>
+		<script src="../js/dlc.js?-4"></script>
+		<script>
+			$(function() {
+				var nickname=localStorage.getItem("nickname");//昵称
+				var avatar=localStorage.getItem("avatar");//头像
+				var mobile=localStorage.getItem("mobile");//电话号码
+				if(!!nickname){
+					$('.nicname').html(nickname);
+				}else{
+					$('.nicname').html("--");
+				}
+				if(!!avatar){
+					$('.avatar').attr('src',avatar);
+				}else{
+					$('.avatar').attr('src',"../img/personal.png");
+				}
+//				if(!!mobile){
+//					$('.mobile').html(mobile);
+//				}else{
+//					$('.mobile').html("未绑定手机号码");
+//				}
+				
+			})
+		</script>
+	</body>
+
+</html>

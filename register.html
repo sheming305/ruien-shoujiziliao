@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .nav{
+            width:1200px;
+            margin:0 auto;
+
+        }
+        ul{
+            list-style: none;
+            border:1px solid #808080;
+            background: #F3F3F3;
+            margin:0;
+            padding:0;
+            height:60px;
+
+        }
+        ul li{
+            display: inline-block;
+            width:200px;
+            padding:5px;
+            height:40px;
+            line-height:40px;
+            margin-top:12px;
+            text-align: center;
+
+        }
+        ul li:hover{
+            cursor: pointer;
+        }
+        .after{
+            clear:both;
+        }
+
+
+        #login,#register{
+            width:1198px;
+            margin:0 auto;
+            border:1px solid #808080;
+            text-align: center;
+        }
+        #register{
+            display: none;
+        }
+        #login label,#register label{
+            display: inline-block;
+            width:100px;
+            height:30px;
+            text-align: right;
+        }
+        #login input,#register input{
+            display: inline-block;
+            width:300px;
+            height:30px;
+            text-align: left;
+            margin-left:30px;
+            padding-left:10px;
+        }
+.active{
+    background: #fff;
+}
+        .anniu{
+            margin-left:110px;
+            margin-top:25px;
+        }
+     #login .anniu>input, #register .anniu>input{
+            width:140px;
+            height:40px;
+         text-align: center;
+         background: #71D398;
+         border:none;
+         color:#fff;
+         font-size: 15px;;
+        }
+        #login .anniu>input, #register .anniu>input:hover{
+           border:1px solid #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="nav">
+    <ul class="after">
+        <li class="youxiang active">邮箱注册</li>
+        <li class="shouji">手机注册</li>
+    </ul>
+</div>
+<div id="login">
+    <form action="">
+        <p>
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username" placeholder="请输入用户名" required/>
+        </p>
+        <p>
+            <label for="password">密码</label>
+            <input type="text" id="password" name="password"/>
+        </p>
+        <p>
+            <label for="password01">确认密码</label>
+            <input type="text" id="password01" name="password"/>
+        </p>
+        <p>
+            <label style="margin-left:53px;" for="seccode">验证码</label>
+            <input type="text" id="seccode" name="seccode">
+           <span><script>seccode2();</script></span>
+            <a href="javascript:updateseccode2()">换一张</a>
+        </p>
+
+        <p class="anniu">
+            <input type="submit" value="注册"/>
+            <input type="reset" value="重置"/>
+        </p>
+
+    </form>
+</div>
+<div id="register">
+    <form action="">
+        <p>
+            <label for="username01">手机号码</label>
+            <input type="text" id="username01" name="username"/>
+        </p>
+        <p>
+            <label for="password001">密码</label>
+            <input type="text" id="password001" name="password"/>
+        </p>
+        <p>
+            <label for="password02">确认密码</label>
+            <input type="text" id="password02" name="password"/>
+        </p>
+        <p>
+            <label style="margin-left:53px;" for="seccode01">验证码</label>
+            <input type="text" id="seccode01" name="seccode01">
+            <span><script>seccode();</script></span>
+            <a href="javascript:updateseccode()">换一张</a>
+        </p>
+        <p class="anniu">
+            <input type="submit" value="注册"/>
+            <input type="reset" value="重置"/>
+        </p>
+    </form>
+</div>
+
+
+<script src="js/jquery.min.js"></script>
+<script>
+    $(function () {
+        $(".nav ul .youxiang").click(function(){
+            $(".nav ul .shouji").removeClass("active");
+            $(this).addClass("active");
+            $("#login").show();
+            $("#register").hide();
+
+        })
+
+        $(".nav ul .shouji").click(function(){
+            $(".nav ul .youxiang").removeClass("active");
+            $(this).addClass("active");
+            $("#register").show();
+            $("#login").hide();
+
+
+        })
+    })
+</script>
+<script>
+
+    function seccode() {
+        var img = 'do.php?ac=seccode&rand='+Math.random();
+        document.writeln('<img id="img_seccode" src="'+img+'" align="absmiddle">');
+    }
+    function updateseccode() {
+        var img = 'do.php?ac=seccode&rand='+Math.random();
+        if(document.getElementById('img_seccode')) {
+            document.getElementById('img_seccode').src = img;
+        }
+    }
+
+</script>
+</body>
+</html>

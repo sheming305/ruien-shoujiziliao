@@ -1,0 +1,209 @@
+(function($) {
+
+$.fn.pager = function(options) {
+
+var opts = $.extend({}, $.fn.pager.defaults, options);
+var pgcount = getPageCount(opts.recordcount, opts.pagesize);
+return this.each(function() {
+
+// empty out the destination element and then render out the pager with the supplied options
+$(this).empty().append(renderpager(parseInt(opts.pagenumber), pgcount, opts.recordcount, opts.buttonClickCallback,
+opts.firsttext, opts.prevtext, opts.nexttext, opts.lasttext, opts.recordtext, opts.gotext));
+
+// specify correct cursor activity
+$(' li', this).mouseover(function() { document.body.style.cursor = "pointer"; }).mouseout(function() { document.body.style.cursor = "auto"; });
+});
+};
+
+function getPageCount(totalCount, pageSize) {
+var pageCount = 0;
+pageCount = parseInt(totalCount / pageSize);
+if (totalCount % pageSize > 0) {
+pageCount++;
+}
+return pageCount;
+}
+
+// render and return the pager with the supplied options
+function renderpager(pagenumber, pagecount, recordcount, buttonClickCallback, firsttext, prevtext, nexttext, lasttext, recordtext, gotext) {
+
+// setup $pager to hold render
+var $pager = $('<ul class="pages"></ul>');
+
+// add in the previous and next buttons
+$pager.append(renderButton('first', firsttext, pagenumber, pagecount, buttonClickCallback)).append(renderButton('prev', prevtext, pagenumber, pagecount, buttonClickCallback));
+
+// pager currently only handles 10 viewable pages ( could be easily parameterized, maybe in next version ) so handle edge cases
+var startPoint = 1;
+var endPoint = 9;
+if (pagenumber > pagecount) {
+pagenumber = pagecount;
+}
+if (pagenumber > 4) {
+startPoint = pagenumber - 4;
+endPoint = pagenumber + 4;
+}
+
+if (endPoint > pagecount) {
+startPoint = pagecount - 8;
+endPoint = pagecount;
+}
+
+if (startPoint < 1) {
+startPoint = 1;
+}
+
+// loop thru visible pages and render buttons
+for (var page = startPoint; page <= endPoint; page++) {
+
+var currentButton = $('<li class="page-number">' + (page) + '</li>');
+
+page == pagenumber ? currentButton.addClass('pgCurrent') : currentButton.click(function() { buttonClickCallback(this.firstChild.data); });
+currentButton.appendTo($pager);
+}
+
+// render in the next and last buttons before returning the whole rendered control back.
+$pager.append(renderButton('next', nexttext, pagenumber, pagecount, buttonClickCallback)).append(renderButton('last', lasttext, pagenumber, pagecount, buttonClickCallback));
+if (pagecount > 9) {
+$pager.append('<li class="pgText"><input tyle="text" class="iptGo" /><span class="spGo">' + gotext + '</span></li>');
+$('.iptGo', $pager).change(function() {
+var num = parseInt($(this).val());
+if (num && num > 0) {
+if (num > pagecount) {
+num = pagecount;
+}
+$(this).val(num);
+}
+else {
+$(this).val('');
+}
+}).keyup(function() { $(this).change(); });
+$('.spGo', $pager).click(function() {
+var num = $('.iptGo', $pager).val();
+if (num != '') {
+buttonClickCallback(num);
+}
+});
+}
+if (recordtext != '') {
+$pager.append('<li class="pgText">' + recordtext.replace(/\{0\}/g, pagecount).replace(/\{1\}/g, recordcount) + '</li>');
+}
+return $pager;
+}
+
+// renders and returns a 'specialized' button, ie 'next', 'previous' etc. rather than a page number button
+function renderButton(buttonLabel, buttonText, pagenumber, pagecount, buttonClickCallback) {
+
+var $Button = $('<li class="pgNext">' + buttonText + '</li>');
+
+var destPage = 1;
+
+// work out destination page for required button type
+switch (buttonLabel) {
+case "first":
+destPage = 1;
+break;
+case "prev":
+destPage = pagenumber - 1;
+break;
+case "next":
+destPage = pagenumber + 1;
+break;
+case "last":
+destPage = pagecount;
+break;
+}
+
+// disable and 'grey' out buttons if not needed.
+if (buttonLabel == "first" || buttonLabel == "prev") {
+pagenumber <= 1 ? $Button.addClass('pgEmpty') : $Button.click(function() { buttonClickCallback(destPage); });
+}
+else {
+pagenumber >= pagecount ? $Button.addClass('pgEmpty') : $Button.click(function() { buttonClickCallback(destPage); });
+}
+
+return $Button;
+}
+
+// pager defaults. hardly worth bothering with in this case but used as placeholder for expansion in the next version
+$.fn.pager.defaults = {
+pagenumber: 1,
+recordcount: 0,
+pagesize: 10,
+firsttext: 'first',//显示的第一页文本
+prevtext: 'prev',//显示的前一页文本
+nexttext: 'next',//显示的下一页文本
+lasttext: 'last',//显示的最后一页文本
+gotext: 'go',//显示的快速跳转文本
+recordtext: ''//显示记录数，为空时不显示，否则按照占位符显示文本，{0}表示总页数，{1}表示总记录数
+};
+
+})(jQuery);
+
+
+
+
+
+
+
+
+
+.jqpager ul.pages {
+display:block;
+border:none;
+text-transform:uppercase;
+margin:2px 0 15px 2px;
+padding:0;
+}
+
+.jqpager ul.pages li {
+list-style:none;
+float:left;
+border:1px solid #ccc;
+text-decoration:none;
+margin:0 5px 0 0;
+padding:5px;
+}
+
+.jqpager ul.pages li:hover {
+border:1px solid #003f7e;
+}
+
+.jqpager ul.pages li.pgEmpty {
+border:1px solid #aaa;
+color:#aaa;
+cursor:default;
+}
+
+.jqpager ul.pages li.pgText
+{
+border:none;
+cursor:default;
+}
+
+.jqpager ul.pages li.page-number
+{
+min-width:15px;
+text-align:center;
+}
+
+.jqpager ul.pages li.pgCurrent {
+border:1px solid #003f7e;
+color:#000;
+font-weight:700;
+background-color:#eee;
+}
+
+.jqpager input.iptGo
+{
+width:30px;
+border:1px solid #ccc;
+margin:-2px 0px 0px 0px;
+height:18px;
+vertical-align:middle;
+}
+.jqpager span.spGo
+{
+cursor:pointer;
+margin-left:2px;
+}  

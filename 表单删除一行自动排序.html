@@ -1,0 +1,194 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="blog" content="blog.csdn.net/IBM_hoojo">
+        <meta http-equiv="email" content="hoojo_@126.com">
+        <meta http-equiv="author" content="hoojo">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style>
+            body {
+                font-family: Verdana, Geneva, sans-serif;
+                font-size: 12px;
+                margin: 0px;
+                padding: 0px;
+            }
+             
+            table {
+                font-size: 12px;
+                font-family: Verdana, Geneva, sans-serif
+            }
+             
+            td {
+                text-align: center;
+                background: #FFF
+            }
+             
+            tr {
+                height: 20px;
+            }
+             
+            th {
+                background: #9DACBF;
+                color: #FFF;
+                height: 20px;
+                line-height: 20px
+            }
+             
+            a {
+                color: #99C;
+            }
+             
+            a:hover {
+                color: #F93
+            }
+             
+            .input td {
+                padding: 2px
+            }
+             
+            .input input {
+                width: 100%;
+                border: 1px solid #000;
+                overflow: hidden
+            }
+        </style>
+        <script type="text/javascript">
+            //简化document.getElementById()方法
+            function $(obj) {
+              return document.getElementById(obj);
+            }
+            //删除行
+            function delRow(e) {
+                var evt = e || event;
+                var targetTable = $("nw");
+                targetTable.deleteRow(~~evt.target.parentNode.parentNode.cells[0].innerHTML);
+                for (var i = 0; i<targetTable.rows.length; i++) {
+                    if (i != 0)
+                    targetTable.rows[i].cells[0].innerHTML = i;
+                }
+            }
+             
+        </script>
+    
+    </head>
+    <body>
+        <table id="nw" cellpadding="0" cellspacing="1" border="0" width="320" bgcolor="#CCCC99">
+            <th>编号</th>
+            <th>名称</th>
+            <th>操作</th>
+            <tr class="input">
+                <td>1</td>
+                <td><input type="text" id="add" /></td>
+                <td style="width: 52px" onClick="delRow(event)"><input type="button" value="删 除" class="btn" /></td>
+            </tr>
+            <tr class="input">
+                <td>2</td>
+                <td><input type="text" id="add" /></td>
+                <td style="width: 52px" onClick="delRow(event)"><input type="button" value="删 除" class="btn" /></td>
+            </tr>
+            <tr class="input">
+                <td>3</td>
+                <td><input type="text" id="add" /></td>
+                <td style="width: 52px" onClick="delRow(event)"><input type="button" value="删 除" class="btn" /></td>
+            </tr>
+            <tr class="input">
+                <td>4</td>
+                <td><input type="text" id="add" /></td>
+                <td style="width: 52px" onClick="delRow(event)"><input type="button" value="删 除" class="btn" /></td>
+            </tr>
+        </table>
+    </body>
+</html> -->
+
+
+<html>
+ <head> 
+
+ </head>
+ <body>
+ <div>
+ <center>
+<input type="button" value="增加一行" onclick="addMyRow()"/>
+<table width="100%" id="mybody" style="color: #FF9933; border-collapse: collapse;" border="1" bordercolor="#FF9933">
+ <tr>
+ <td>序号</td>
+ <td>名称</td>
+ <td>展区</td>
+ <td>展位数</td>
+ <td>操作</td>
+ </tr>
+ <tr>
+    
+</tr>
+</table>
+ <center>
+ <div>
+
+     <script type="text/javascript">
+function addMyRow(){              
+             var mytable = document.getElementById("mybody");    
+             // 以前是mytable.rows.length  没有-1       
+             var len=mytable.rows.length-1;   
+             var i=len-1;          
+             var mytr = mytable.insertRow(len); 
+ 
+             mytr.setAttribute("id","tr"+i);
+             var mytd_1=mytr.insertCell(0); 
+             mytd_1.align='center';        
+             //mytd_1.setAttribute("class","index");  
+             var mytd_2=mytr.insertCell(1);   
+             var mytd_3=mytr.insertCell(2);   
+             var mytd_4=mytr.insertCell(3);   
+             var mytd_5=mytr.insertCell(4);  
+            
+             mytd_1.innerHTML=len; 
+             mytd_2.innerHTML="<input type='text' id='name"+i+"'"+" name='name"+i+"'/>";  
+             mytd_3.innerHTML="<input type='text' id='area"+i+"' name='area"+i+"'/>"; 
+             mytd_4.innerHTML="<input type='text' id='qty"+i+"' name='qty"+i+"'/>";               
+             mytd_5.innerHTML="<a href='#;return false;' onclick='delMyRow("+i+")'><font color='#FF9933'>删除</font></a>";    
+         }  
+         
+        // <!--删除当前行,然后实现重排序-->   
+function delMyRow(j){   
+            var mytable = document.getElementById("mybody");
+            var len=mytable.rows.length-1;   
+            var myrow = document.getElementById("tr"+j);
+          console.log(myrow);
+            if(document.getElementById('name'+j).value!=''){
+
+                if(window.confirm('确定删除这条数据吗？')){
+                     mytable.deleteRow(myrow.rowIndex); 
+                     }else{  return false;}
+                     }else{
+                        mytable.deleteRow(myrow.rowIndex);
+                        }
+          
+     //<!--如果不是删除最后一行，先将后面行输入的数据保存-->
+            if(j<len-2){
+                 var name=new Array([len-j-2]);
+                 var area=new Array([len-j-2]);
+                 var qty=new Array([len-j-2]);
+                
+                 var k=0;
+                 for(var i=j+1;i<=len-2;i++){
+                 name[k]=document.getElementById('name'+i).value; 
+                 area[k]=document.getElementById('area'+i).value;
+                 qty[k]=document.getElementById('qty'+i).value; 
+                 mytable.deleteRow(document.getElementById("tr"+i).rowIndex);
+                 k++;
+
+            }
+     // <!--删除以后重排序。-->
+            var h=j; 
+              for(var i=0;i<len-2-j;i++){
+                 addMyRow();
+                 document.getElementById('name'+h).value=name[i]; 
+                 document.getElementById('area'+h).value=area[i];
+                 document.getElementById('qty'+h).value=qty[i]; 
+                 h++;
+                }
+            }
+         }
+ </script>
+ </body>
+</html>
